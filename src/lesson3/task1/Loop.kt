@@ -80,7 +80,7 @@ fun fib(n: Int): Int { //Или же решение через рекурсию,
     var n1 = 1
     var n2 = 1
     for (i in 3..n) {
-        var m = n2
+        val m = n2
         n2 += n1
         n1 = m
     }
@@ -96,8 +96,10 @@ fun fib(n: Int): Int { //Или же решение через рекурсию,
 fun lcm(m: Int, n: Int): Int {
     var a = m
     var b = n
-    while ((a != 0) && (b !=0)) if (a > b) a = a%b else b = b%a //Находим НОД(алгоритм Евклида)
-    return m*n/(a+b) //Зная НОД(a+b), находим НОК по формуле
+    while ((a != 0) && (b != 0))
+        if (a > b) a = a % b
+        else b = b % a //Находим НОД(алгоритм Евклида)
+    return m * n / (a + b) //Зная НОД(a+b), находим НОК по формуле
 }
 
 /**
@@ -106,7 +108,8 @@ fun lcm(m: Int, n: Int): Int {
  * Для заданного числа n > 1 найти минимальный делитель, превышающий 1
  */
 fun minDivisor(n: Int): Int {
-    for (i in 2..Math.sqrt(n.toDouble()).toInt()) if (n%i == 0) return i
+    for (i in 2..Math.sqrt(n.toDouble()).toInt())
+        if (n % i == 0) return i
     return n
 }
 
@@ -116,7 +119,8 @@ fun minDivisor(n: Int): Int {
  * Для заданного числа n > 1 найти максимальный делитель, меньший n
  */
 fun maxDivisor(n: Int): Int {
-    for (i in 2..Math.sqrt(n.toDouble()).toInt()) if (n%i == 0) return n/i
+    for (i in 2..Math.sqrt(n.toDouble()).toInt())
+        if (n % i == 0) return n / i
     return 1
 }
 
@@ -128,9 +132,10 @@ fun maxDivisor(n: Int): Int {
  * Например, 25 и 49 взаимно простые, а 6 и 8 -- нет.
  */
 fun isCoPrime(m: Int, n: Int): Boolean {
-    val k = Math.min(m,n)
-    for (i in 2..Math.sqrt(k.toDouble()).toInt()) if ((m%i == 0) && (n%i == 0)) return false
-    if (Math.max(m,n)%k == 0) return false else return true
+    val k = Math.min(m, n)
+    for (i in 2..Math.sqrt(k.toDouble()).toInt())
+        if ((m % i == 0) && (n % i == 0)) return false
+    return Math.max(m, n) % k != 0
 }
 
 /**
@@ -141,8 +146,8 @@ fun isCoPrime(m: Int, n: Int): Boolean {
  * Например, для интервала 21..28 21 <= 5*5 <= 28, а для интервала 51..61 квадрата не существует.
  */
 fun squareBetweenExists(m: Int, n: Int): Boolean {
-    val k = (Math.sqrt(m.toDouble())+1).toInt()
-    if ((k*k in m..n) || (m == n)) return true else return false
+    val k = (Math.sqrt(m.toDouble()) + 1).toInt()
+    return (k * k in m..n) || (m == n)
 }
 
 /**
@@ -157,19 +162,13 @@ fun sin(x: Double, eps: Double): Double {
     var n = -1
     var s = 0.0
     var b = true
-    while (g > 2*Math.PI) g -= 2*Math.PI
+    while (g > 2 * Math.PI) g -= 2 * Math.PI
     do {
         n += 2
-        var k = Math.pow(g,n.toDouble())/factorial(n)
-        if (b) {
-            s += k
-            b = false
-            //println("$n + $k = $s")
-        } else {
-            s -= k
-            b = true
-            //println("$n - $k = $s")
-        }
+        val k = Math.pow(g, n.toDouble()) / factorial(n)
+        if (b) s += k
+        else s -= k
+        b = !b
     } while (k >= eps)
     return s
 }
@@ -186,17 +185,13 @@ fun cos(x: Double, eps: Double): Double {
     var n = -2
     var s = 0.0
     var b = true
-    while (g > 2*Math.PI) g -= 2*Math.PI
+    while (g > 2 * Math.PI) g -= 2 * Math.PI
     do {
         n += 2
-        var k = Math.pow(g,n.toDouble())/factorial(n)
-        if (b) {
-            s += k
-            b = false
-        } else {
-            s -= k
-            b = true
-        }
+        val k = Math.pow(g, n.toDouble()) / factorial(n)
+        if (b) s += k
+        else s -= k
+        b = !b
     } while (k >= eps)
     return s
 }
@@ -208,10 +203,10 @@ fun cos(x: Double, eps: Double): Double {
  * Не использовать строки при решении задачи.
  */
 fun revert(n: Int): Int {
-    var a = n/10
-    var res = n%10
+    var a = n / 10
+    var res = n % 10
     while (a > 0) {
-        res = res*10+a%10
+        res = res * 10 + a % 10
         a /= 10
     }
     return res
@@ -225,13 +220,13 @@ fun revert(n: Int): Int {
  * 15751 -- палиндром, 3653 -- нет.
  */
 fun isPalindrome(n: Int): Boolean {
-    var a = n/10
-    var res = n%10
+    var a = n / 10
+    var res = n % 10
     while (a > 0) {
-        res = res*10+a%10
+        res = res * 10 + a % 10
         a /= 10
     }
-    if (res == n) return true else return false
+    return res == n
 }
 
 /**
@@ -241,12 +236,10 @@ fun isPalindrome(n: Int): Boolean {
  * Например, 54 и 323 состоят из разных цифр, а 111 и 0 из одинаковых.
  */
 fun hasDifferentDigits(n: Int): Boolean {
-    val g = n%10
-    var t = n/10
-    while ((g == t%10) && (t > 0)) {
-        t /= 10
-    }
-    if (t != 0) return true else return false
+    val g = n % 10
+    var t = n / 10
+    while ((g == t % 10) && (t > 0)) t /= 10
+    return t != 0
 }
 
 /**
@@ -261,22 +254,24 @@ fun squareSequenceDigit(n: Int): Int {
     var p = 1
     var g = 1
     while (k != n) {
-        g = p*p
-        if (g%10 == 0) if (k+1 == n) return 0 else g++ //Пояснение ниже
+        g = p * p
+        if (g % 10 == 0)
+            if (k + 1 == n) return 0
+            else g++ //Пояснение ниже
         /*
         Если число оканчивается на 0, то его невозможно перевернуть, не используя тип string.
         Поэтому "если число оканчивается на ноль, то, если этот 0 стоит под искомым номером(n),
         вернуть ноль, иначе прибавить к этому числу 1 и продолжить выполнять алгоритм в штатном порядке"
         */
-        var res = g%10
+        var res = g % 10
         g /= 10
         while (g > 0) {
-            res = res*10+g%10
+            res = res * 10 + g % 10
             g /= 10
         } //Переворачиваем квадраты чисел
         while ((k != n) && (res > 0)) {
             k++
-            g = res%10
+            g = res % 10
             res /= 10
         }
         p++
@@ -297,46 +292,19 @@ fun fibSequenceDigit(n: Int): Int {
     var g = 1
     while (k != n) {
         g = fib(p)
-        if (g%10 == 0) if (k+1 == n) return 0 else g++
-        var res = g%10
+        if (g % 10 == 0) if (k + 1 == n) return 0 else g++
+        var res = g % 10
         g /= 10
         while (g > 0) {
-            res = res*10+g%10
+            res = res * 10 + g % 10
             g /= 10
         } //Переворачиваем числа Фибоначчи
         while ((k != n) && (res > 0)) {
             k++
-            g = res%10
+            g = res % 10
             res /= 10
         }
         p++
     }
     return g
-}
-
-
-fun main(args: Array<String>) {
-    println(sin(100*Math.PI, 1e-5))
-    println(san(100*Math.PI, 1e-5))
-}
-
-fun san(x: Double, eps: Double): Double {
-    println(x)
-    val num = x % (2 * Math.PI)
-    println(num)
-    var result = num
-var member = 1.0
-var count = 3
-while (Math.abs(member) > eps) {
-    member = Math.pow(num, count.toDouble()) / factorial(count)
-    if ((count - 1) % 4 == 0) {
-        result += member
-        println("$count + $member")
-    } else {
-        result -= member
-        println("$count - $member")
-    }
-    count += 2
-}
-return result
 }

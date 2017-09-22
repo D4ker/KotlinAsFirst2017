@@ -109,7 +109,7 @@ fun buildSumExample(list: List<Int>) = list.joinToString(separator = " + ", post
 fun abs(v: List<Double>): Double {
     var k = 0.0
     if (v.isNotEmpty())
-        for (element in v) k += element*element
+        for (element in v) k += element * element
     return Math.sqrt(k)
 }
 
@@ -118,7 +118,8 @@ fun abs(v: List<Double>): Double {
  *
  * Рассчитать среднее арифметическое элементов списка list. Вернуть 0.0, если список пуст
  */
-fun mean(list: List<Double>): Double = if (list.isNotEmpty()) list.sum()/list.size.toDouble() else 0.0
+fun mean(list: List<Double>): Double =
+        if (list.isNotEmpty()) list.sum() / list.size else 0.0
 
 /**
  * Средняя
@@ -129,9 +130,9 @@ fun mean(list: List<Double>): Double = if (list.isNotEmpty()) list.sum()/list.si
  * Обратите внимание, что данная функция должна изменять содержание списка list, а не его копии.
  */
 fun center(list: MutableList<Double>): MutableList<Double> {
-    val s = list.sum()/list.size.toDouble()
+    val s = list.sum() / list.size
     if (list.isNotEmpty())
-        for (i in 0..list.size-1) list[i] -= s
+        for (i in 0 until list.size) list[i] -= s
     return list
 }
 
@@ -145,7 +146,7 @@ fun center(list: MutableList<Double>): MutableList<Double> {
 fun times(a: List<Double>, b: List<Double>): Double {
     var c = 0.0
     if (a.isNotEmpty())
-        for (i in 0..a.size-1) c += a[i]*b[i]
+        for (i in 0 until a.size) c += a[i] * b[i]
     return c
 }
 
@@ -160,8 +161,8 @@ fun times(a: List<Double>, b: List<Double>): Double {
 fun polynom(p: List<Double>, x: Double): Double {
     var k = 0.0
     if (p.isNotEmpty())
-        for (i in 0..p.size-1)
-            k += p[i]*Math.pow(x,i.toDouble())
+        for (i in 0 until p.size)
+            k += p[i] * Math.pow(x, i.toDouble())
     return k
 }
 
@@ -177,7 +178,7 @@ fun polynom(p: List<Double>, x: Double): Double {
  */
 fun accumulate(list: MutableList<Double>): MutableList<Double> {
     if (list.isNotEmpty())
-        for (i in 1..list.size-1) list[i] += list[i-1]
+        for (i in 1 until list.size) list[i] += list[i - 1]
     return list
 }
 
@@ -193,7 +194,7 @@ fun factorize(n: Int): List<Int> {
     var k = n
     var i = 2
     while (i in 2..Math.sqrt(k.toDouble()).toInt()) {
-        if (k%i == 0) {
+        if (k % i == 0) {
             a.add(i)
             k /= i
             i = 1
@@ -223,7 +224,7 @@ fun convert(n: Int, base: Int): List<Int> {
     val a = mutableListOf<Int>()
     var k = n
     while (k > 0) {
-        a.add(0, k%base)
+        a.add(0, k % base)
         k /= base
     }
     if (n == 0) a.add(0)
@@ -243,7 +244,7 @@ fun convertToString(n: Int, base: Int): String {
     var k = n
     val s = "0123456789abcdefghijklmnopqrstuvwxyz"
     while (k > 0) {
-        a.add(0, s[k%base].toString())
+        a.add(0, s[k % base].toString())
         k /= base
     }
     if (n == 0) a.add("0")
@@ -259,8 +260,8 @@ fun convertToString(n: Int, base: Int): String {
  */
 fun decimal(digits: List<Int>, base: Int): Int {
     var s = 0.0
-    for (i in 0..digits.size-1)
-        s += digits[i]*Math.pow(base.toDouble(), digits.size-1-i.toDouble())
+    for (i in 0 until digits.size)
+        s += digits[i] * Math.pow(base.toDouble(), digits.size - 1.0 - i)
     return s.toInt()
 }
 
@@ -276,8 +277,8 @@ fun decimal(digits: List<Int>, base: Int): Int {
 fun decimalFromString(str: String, base: Int): Int {
     var g = 0.0
     val s = "0123456789abcdefghijklmnopqrstuvwxyz"
-    for (i in 0..str.length-1)
-        g += s.indexOf(str[i], 0) * Math.pow(base.toDouble(), str.length-1-i.toDouble())
+    for (i in 0 until str.length)
+        g += s.indexOf(str[i], 0) * Math.pow(base.toDouble(), str.length - 1.0 - i)
     return g.toInt()
 }
 
@@ -294,14 +295,14 @@ fun roman(n: Int): String {
     var k = n
     var p = 1
     while (k > 0) {
-        var g = k%10
+        val g = k % 10
         if (p == 1)
             when (g) {
                 in 1..3 -> for (i in 1..g) a.add(0,"I")
                 4 -> a.add(0,"IV")
                 5 -> a.add(0,"V")
                 in 6..8 -> {
-                    for (i in 1..g-5) a.add(0,"I")
+                    for (i in 1..g - 5) a.add(0,"I")
                     a.add(0,"V")
                 }
                 9 -> a.add(0,"IX")
@@ -312,7 +313,7 @@ fun roman(n: Int): String {
                 4 -> a.add(0,"XL")
                 5 -> a.add(0,"L")
                 in 6..8 -> {
-                    for (i in 1..g-5) a.add(0,"X")
+                    for (i in 1..g - 5) a.add(0,"X")
                     a.add(0,"L")
                 }
                 9 -> a.add(0,"XC")
@@ -323,7 +324,7 @@ fun roman(n: Int): String {
                 4 -> a.add(0,"CD")
                 5 -> a.add(0,"D")
                 in 6..8 -> {
-                    for (i in 1..g-5) a.add(0,"C")
+                    for (i in 1..g - 5) a.add(0,"C")
                     a.add(0,"D")
                 }
                 9 -> a.add(0,"CM")
@@ -350,14 +351,14 @@ fun russian(n: Int): String {
     val a = mutableListOf<String>()
     var k = n
     var p = 1
-    var g = k%10
+    var g = k % 10
     while (k > 0) {
         when {
 
             ((p == 1) && (g != 0)) ->
-                if (k/10%10 != 1) a.add(0, firstNum[g - 1])
+                if (k / 10 % 10 != 1) a.add(0, firstNum[g - 1])
                 else {
-                    a.add(0, secondNum[g-1])
+                    a.add(0, secondNum[g - 1])
                     p++
                     k /= 10
                 }
@@ -373,7 +374,7 @@ fun russian(n: Int): String {
 
 
             (p == 4) -> {
-                if (k/10%10 != 1) {
+                if (k / 10 % 10 != 1) {
                     when (g) {
                         0 -> a.add(0, "тысяч")
                         1 -> a.add(0, "одна тысяча")
@@ -383,7 +384,7 @@ fun russian(n: Int): String {
                     }
                 } else {
                     if (g == 0) a.add(0, "десять тысяч")
-                        else a.add(0, secondNum[g-1] + " тысяч")
+                        else a.add(0, secondNum[g - 1] + " тысяч")
                     p++
                     k /= 10
                 }
@@ -393,7 +394,7 @@ fun russian(n: Int): String {
 
         }
         k /= 10
-        g = k%10
+        g = k % 10
         p++
     }
     return a.joinToString(separator = " ")

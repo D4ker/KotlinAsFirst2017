@@ -51,7 +51,8 @@ fun main(args: Array<String>) {
  * Пользователь задает время в часах, минутах и секундах, например, 8:20:35.
  * Рассчитать время в секундах, прошедшее с начала суток (30035 в данном случае).
  */
-fun seconds(hours: Int, minutes: Int, seconds: Int): Int = hours*3600+minutes*60+seconds
+fun seconds(hours: Int, minutes: Int, seconds: Int): Int =
+        hours * 3600 + minutes * 60 + seconds
 
 /**
  * Тривиальная
@@ -60,7 +61,8 @@ fun seconds(hours: Int, minutes: Int, seconds: Int): Int = hours*3600+minutes*60
  * Определить длину того же отрезка в метрах (в данном случае 18.98).
  * 1 сажень = 3 аршина = 48 вершков, 1 вершок = 4.445 см.
  */
-fun lengthInMeters(sagenes: Int, arshins: Int, vershoks: Int): Double = (sagenes*48+arshins*16+vershoks)*4.445e-2
+fun lengthInMeters(sagenes: Int, arshins: Int, vershoks: Int): Double =
+        (sagenes * 48 + arshins * 16 + vershoks) * 4.445e-2
 
 /**
  * Тривиальная
@@ -68,7 +70,8 @@ fun lengthInMeters(sagenes: Int, arshins: Int, vershoks: Int): Double = (sagenes
  * Пользователь задает угол в градусах, минутах и секундах (например, 36 градусов 14 минут 35 секунд).
  * Вывести значение того же угла в радианах (например, 0.63256).
  */
-fun angleInRadian(grad: Int, min: Int, sec: Int): Double = (grad+min.toDouble()/60+sec.toDouble()/3600)*PI/180
+fun angleInRadian(grad: Int, min: Int, sec: Int): Double =
+        (grad + min.toDouble() / 60 + sec.toDouble() / 3600) * PI / 180
 
 /**
  * Тривиальная
@@ -76,7 +79,8 @@ fun angleInRadian(grad: Int, min: Int, sec: Int): Double = (grad+min.toDouble()/
  * Найти длину отрезка, соединяющего точки на плоскости с координатами (x1, y1) и (x2, y2).
  * Например, расстояние между (3, 0) и (0, 4) равно 5
  */
-fun trackLength(x1: Double, y1: Double, x2: Double, y2: Double): Double = sqrt(sqr(x1-x2)+sqr(y1-y2))
+fun trackLength(x1: Double, y1: Double, x2: Double, y2: Double): Double =
+        sqrt(sqr(x1 - x2)+sqr(y1 - y2))
 
 /**
  * Простая
@@ -84,7 +88,7 @@ fun trackLength(x1: Double, y1: Double, x2: Double, y2: Double): Double = sqrt(s
  * Пользователь задает целое число, большее 100 (например, 3801).
  * Определить третью цифру справа в этом числе (в данном случае 8).
  */
-fun thirdDigit(number: Int): Int = (number/100)%10
+fun thirdDigit(number: Int): Int = number / 100 % 10
 
 /**
  * Простая
@@ -93,7 +97,8 @@ fun thirdDigit(number: Int): Int = (number/100)%10
  * прибыл на станцию назначения в h2 часов m2 минут того же дня (например в 13:01).
  * Определите время поезда в пути в минутах (в данном случае 216).
  */
-fun travelMinutes(hoursDepart: Int, minutesDepart: Int, hoursArrive: Int, minutesArrive: Int): Int = (hoursArrive-hoursDepart)*60+minutesArrive-minutesDepart
+fun travelMinutes(hoursDepart: Int, minutesDepart: Int, hoursArrive: Int, minutesArrive: Int): Int =
+        (hoursArrive - hoursDepart) * 60 + minutesArrive - minutesDepart
 
 /**
  * Простая
@@ -102,7 +107,8 @@ fun travelMinutes(hoursDepart: Int, minutesDepart: Int, hoursArrive: Int, minute
  * Сколько денег будет на счету через 3 года (с учётом сложных процентов)?
  * Например, 100 рублей под 10% годовых превратятся в 133.1 рубля
  */
-fun accountInThreeYears(initial: Int, percent: Int): Double = initial*pow(1+percent/100.0, 3.0)
+fun accountInThreeYears(initial: Int, percent: Int): Double =
+        initial * pow(1 + percent / 100.0, 3.0)
 
 /**
  * Простая
@@ -111,7 +117,7 @@ fun accountInThreeYears(initial: Int, percent: Int): Double = initial*pow(1+perc
  *Необходимо вывести число, полученное из заданного перестановкой цифр в обратном порядке (например, 874).
  */
 fun numberRevert(number: Int): Int {
-    val n1 = number%10
-    val n2 = (number/10)%10
-    return n1*100+n2*10+number/100
+    val n1 = number % 10
+    val n2 = number / 10 % 10
+    return n1 * 100 + n2 * 10 + number / 100
 }
