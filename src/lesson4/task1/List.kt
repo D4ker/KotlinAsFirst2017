@@ -291,49 +291,24 @@ fun decimalFromString(str: String, base: Int): Int {
  * Например: 23 = XXIII, 44 = XLIV, 100 = C
  */
 fun roman(n: Int): String {
-    val a = mutableListOf<String>()
+    val res = mutableListOf<String>()
+    val a = listOf<String>("I", "IV", "V", "IX", "X", "XL", "L", "XC", "C", "CD", "D", "CM", "M")
+    val b = listOf<Int>(1, 4, 5, 9, 10, 40, 50, 90, 100, 400, 500, 900, 1000)
     var k = n
     var p = 1
     while (k > 0) {
-        val g = k % 10
-        if (p == 1)
-            when (g) {
-                in 1..3 -> for (i in 1..g) a.add(0,"I")
-                4 -> a.add(0,"IV")
-                5 -> a.add(0,"V")
-                in 6..8 -> {
-                    for (i in 1..g - 5) a.add(0,"I")
-                    a.add(0,"V")
-                }
-                9 -> a.add(0,"IX")
-            }
-        if (p == 2)
-            when (g) {
-                in 1..3 -> for (i in 1..g) a.add(0,"X")
-                4 -> a.add(0,"XL")
-                5 -> a.add(0,"L")
-                in 6..8 -> {
-                    for (i in 1..g - 5) a.add(0,"X")
-                    a.add(0,"L")
-                }
-                9 -> a.add(0,"XC")
-            }
-        if (p == 3)
-            when (g) {
-                in 1..3 -> for (i in 1..g) a.add(0,"C")
-                4 -> a.add(0,"CD")
-                5 -> a.add(0,"D")
-                in 6..8 -> {
-                    for (i in 1..g - 5) a.add(0,"C")
-                    a.add(0,"D")
-                }
-                9 -> a.add(0,"CM")
-            }
-        if (p == 4) for (i in 1..g) a.add(0,"M")
+        val f = k % 10
+        if (f in b) res.add(0, a[b.indexOf(f * p)])
+        else {
+            val g = if (f in 6..8) f - 5
+                else f
+            for (i in 1..g) res.add(0, a[b.indexOf(p)])
+            if (f in 6..8) res.add(0, a[b.indexOf(5 * p)])
+        }
+        p *= 10
         k /= 10
-        p++
     }
-    return a.joinToString(separator = "")
+    return res.joinToString("")
 }
 
 /**
@@ -344,58 +319,41 @@ fun roman(n: Int): String {
  * 23964 = "двадцать три тысячи девятьсот шестьдесят четыре"
  */
 fun russian(n: Int): String {
-    val firstNum = listOf<String>("один", "два", "три", "четыре", "пять", "шесть", "семь", "восемь", "девять")
-    val secondNum = listOf<String>("одиннадцать", "двенадцать", "тринадцать","четырнадцать", "пятнадцать", "шестнадцать", "семнадцать", "восемнадцать", "девятнадцать")
-    val thirdNum = listOf<String>("десять", "двадцать", "тридцать", "сорок", "пятьдесят", "шестьдесят", "семьдесят", "восемьдесят", "девяносто")
-    val fourNum = listOf<String>("сто", "двести", "триста", "четыреста", "пятьсот", "шестьсот", "семьсот", "восемьсот", "девятьсот")
+    val firstNum = listOf<String>("", "один", "два", "три", "четыре", "пять", "шесть",
+            "семь", "восемь", "девять")
+    val secondNum = listOf<String>("десять", "одиннадцать", "двенадцать", "тринадцать","четырнадцать", "пятнадцать",
+            "шестнадцать", "семнадцать", "восемнадцать", "девятнадцать")
+    val thirdNum = listOf<String>("", "", "двадцать", "тридцать", "сорок", "пятьдесят", "шестьдесят",
+            "семьдесят", "восемьдесят", "девяносто")
+    val fourthNum = listOf<String>("", "сто", "двести", "триста", "четыреста", "пятьсот", "шестьсот",
+            "семьсот", "восемьсот", "девятьсот")
     val a = mutableListOf<String>()
     var k = n
-    var p = 1
-    var g = k % 10
+    var p = 0
     while (k > 0) {
-        when {
+        val g = k % 10
+        p++
+        when (p) {
 
-            ((p == 1) && (g != 0)) ->
-                if (k / 10 % 10 != 1) a.add(0, firstNum[g - 1])
-                else {
-                    a.add(0, secondNum[g - 1])
-                    p++
-                    k /= 10
+            1 -> if (k % 100 !in 10..19) a.add(0, firstNum[g])
+                    else a.add(0, secondNum[g])
+
+            2, 5 -> a.add(0, thirdNum[g])
+
+            3, 6 -> a.add(0, fourthNum[g])
+
+            4 -> if (k % 100 in 10..19)
+                    a.add(0, secondNum[g] + " тысяч")
+                else when (g) {
+                    0 -> a.add(0, "тысяч")
+                    1 -> a.add(0, "одна тысяча")
+                    2 -> a.add(0, "две тысячи")
+                    3, 4 -> a.add(0, firstNum[g] + " тысячи")
+                    in 5..9 -> a.add(0, firstNum[g] + " тысяч")
                 }
-
-
-
-            (((p == 2) || (p == 5)) && (g != 0)) -> a.add(0, thirdNum[g - 1])
-
-
-
-            (((p == 3) || (p == 6)) && (g != 0)) -> a.add(0, fourNum[g - 1])
-
-
-
-            (p == 4) -> {
-                if (k / 10 % 10 != 1) {
-                    when (g) {
-                        0 -> a.add(0, "тысяч")
-                        1 -> a.add(0, "одна тысяча")
-                        2 -> a.add(0, "две тысячи")
-                        in 3..4 -> a.add(0, firstNum[g - 1] + " тысячи")
-                        in 5..9 -> a.add(0, firstNum[g - 1] + " тысяч")
-                    }
-                } else {
-                    if (g == 0) a.add(0, "десять тысяч")
-                        else a.add(0, secondNum[g - 1] + " тысяч")
-                    p++
-                    k /= 10
-                }
-            }
-
-
 
         }
         k /= 10
-        g = k % 10
-        p++
     }
-    return a.joinToString(separator = " ")
+    return a.filter { it != "" }.joinToString(separator = " ")
 }
