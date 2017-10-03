@@ -133,6 +133,7 @@ fun maxDivisor(n: Int): Int {
  */
 fun isCoPrime(m: Int, n: Int): Boolean {
     val k = Math.min(m, n)
+    if (k == 1) return true
     for (i in 2..Math.sqrt(k.toDouble()).toInt())
         if ((m % i == 0) && (n % i == 0)) return false
     return Math.max(m, n) % k != 0
@@ -163,6 +164,7 @@ fun sin(x: Double, eps: Double): Double {
     var s = 0.0
     var b = true
     while (g > 2 * Math.PI) g -= 2 * Math.PI
+    while (g < 0) g += 2 * Math.PI
     do {
         n += 2
         val k = Math.pow(g, n.toDouble()) / factorial(n)
@@ -186,6 +188,7 @@ fun cos(x: Double, eps: Double): Double {
     var s = 0.0
     var b = true
     while (g > 2 * Math.PI) g -= 2 * Math.PI
+    while (g < 0) g += 2 * Math.PI
     do {
         n += 2
         val k = Math.pow(g, n.toDouble()) / factorial(n)
@@ -251,27 +254,18 @@ fun hasDifferentDigits(n: Int): Boolean {
  */
 fun squareSequenceDigit(n: Int): Int {
     var k = 0
-    var p = 1
-    var g = 1
-    while (k != n) {
-        g = p * p
-        if (g % 10 == 0)
-            if (k + 1 == n) return 0
-            else g++
-        var res = g % 10
-        g /= 10
-        while (g > 0) {
-            res = res * 10 + g % 10
-            g /= 10
-        } //Переворачиваем квадраты чисел
-        while ((k != n) && (res > 0)) {
-            k++
-            g = res % 10
-            res /= 10
-        }
+    var p = 2
+    var s = 1
+    while (k + digitNumber(s) < n) {
+        k += digitNumber(s)
+        s = p * p
         p++
     }
-    return g
+    for (i in 0..digitNumber(s) + k - n) {
+        p = s % 10
+        s /= 10
+    }
+    return p
 }
 
 /**
@@ -283,23 +277,16 @@ fun squareSequenceDigit(n: Int): Int {
  */
 fun fibSequenceDigit(n: Int): Int {
     var k = 0
-    var p = 1
-    var g = 1
-    while (k != n) {
-        g = fib(p)
-        if (g % 10 == 0) if (k + 1 == n) return 0 else g++
-        var res = g % 10
-        g /= 10
-        while (g > 0) {
-            res = res * 10 + g % 10
-            g /= 10
-        } //Переворачиваем числа Фибоначчи
-        while ((k != n) && (res > 0)) {
-            k++
-            g = res % 10
-            res /= 10
-        }
+    var p = 2
+    var s = 1
+    while (k + digitNumber(s) < n) {
+        k += digitNumber(s)
+        s = fib(p)
         p++
     }
-    return g
+    for (i in 0..digitNumber(s) + k - n) {
+        p = s % 10
+        s /= 10
+    }
+    return p
 }

@@ -74,7 +74,7 @@ fun dateStrToDigit(str: String): String {
         val a = s[0].toInt()
         val b = month.indexOf(s[1]) + 1 //Если элемента нет в списке, b = -1+1 = 0
         val c = s[2].toInt()
-        if ((s.size == 3) && (a in 1..31) && (b != 0) && (c > 0))
+        if ((s.size == 3) && (a in 1..31) && (b != 0) && (c >= 0))
             String.format("%02d.%02d.%d", a, b, c)
         else ""
     } catch (e: Exception) {
@@ -97,7 +97,7 @@ fun dateDigitToStr(digital: String): String {
         val a = s[0].toInt()
         val b = month[s[1].toInt() - 1]
         val c = s[2].toInt()
-        if ((s.size == 3) && (a in 1..31) && (c > 0))
+        if ((s.size == 3) && (a in 1..31) && (c >= 0))
             String.format("%d %s %d", a, b, c)
         else ""
     } catch (e: Exception) {
@@ -146,13 +146,10 @@ fun flattenPhoneNumber(phone: String): String {
  * При нарушении формата входной строки или при отсутствии в ней чисел, вернуть -1.
  */
 fun bestLongJump(jumps: String): Int {
-    val a = jumps.split(" ")
+    val a = jumps.split(" ").filter { it != "" && it != "-" && it != "%" }
     var mx = -1
     try {
-        for (i in a) {
-            if ((i == "%") || (i == "-")) continue
-            mx = Math.max(mx, i.toInt())
-        }
+        for (i in a) mx = Math.max(mx, i.toInt())
     } catch (e: Exception) {
         return -1
     }
@@ -199,11 +196,11 @@ fun plusMinus(expression: String): Int {
             when (a[i]) {
                 "+" -> s += a[i + 1].toInt()
                 "-" -> s -= a[i + 1].toInt()
-                else -> throw IllegalAccessException()
+                else -> throw IllegalArgumentException()
             }
         return s
     } catch (e: Exception) {
-        throw IllegalAccessException()
+        throw IllegalArgumentException()
     }
 }
 

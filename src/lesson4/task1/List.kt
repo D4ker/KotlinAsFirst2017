@@ -298,12 +298,12 @@ fun roman(n: Int): String {
     var p = 1
     while (k > 0) {
         val f = k % 10
-        if (f in b) res.add(0, a[b.indexOf(f * p)])
+        if (f * p in b) res.add(0, a[b.indexOf(f * p)])
         else {
-            val g = if (f in 6..8) f - 5
+            val g = if ((f in 6..8) && (p != 1000)) f - 5
                 else f
             for (i in 1..g) res.add(0, a[b.indexOf(p)])
-            if (f in 6..8) res.add(0, a[b.indexOf(5 * p)])
+            if ((f in 6..8) && (p != 1000)) res.add(0, a[b.indexOf(5 * p)])
         }
         p *= 10
         k /= 10
