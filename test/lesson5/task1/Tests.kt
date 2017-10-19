@@ -46,6 +46,7 @@ class Tests {
         assertEquals("", dateStrToDigit("-3 5 2005"))
         assertEquals("", dateStrToDigit("-10 марта 2001"))
         assertEquals("", dateStrToDigit("41 июля 2013"))
+        assertEquals("01.09.0", dateStrToDigit("01 сентября 0"))
     }
 
     @Test
@@ -55,6 +56,7 @@ class Tests {
         assertEquals("", dateDigitToStr("01.02.20.19"))
         assertEquals("", dateDigitToStr("28.00.2000"))
         assertEquals("3 апреля 2011", dateDigitToStr("03.04.2011"))
+        assertEquals("", dateDigitToStr("ab.cd.ef"))
         assertEquals("", dateDigitToStr("12.cd.2004"))//мои проверки
         assertEquals("", dateDigitToStr("-15.04.2017"))
         assertEquals("", dateDigitToStr("32.12.1999"))
@@ -63,6 +65,7 @@ class Tests {
         assertEquals("", dateDigitToStr(".05.2018"))
         assertEquals("", dateDigitToStr("0.0.2000"))
         assertEquals("", dateDigitToStr("09.-5.2001"))
+        assertEquals("14 августа 0", dateDigitToStr("14.08.0"))
     }
 
     @Test
@@ -89,7 +92,7 @@ class Tests {
         assertEquals(-1, bestLongJump("% - - % -"))
         assertEquals(754, bestLongJump("700 717 707 % 754"))
         assertEquals(-1, bestLongJump("700 + 700"))
-
+        assertEquals(1981210525, bestLongJump("- - % 1981210525  -  747680635 -  399091201  %"))
     }
 
     @Test

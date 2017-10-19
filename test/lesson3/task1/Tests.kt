@@ -133,6 +133,12 @@ class Tests {
         assertFalse(isCoPrime(37, 111))
         assertTrue(isCoPrime(1234567890, 908765431))
         assertTrue(isCoPrime(2109876543, 1234567891))
+        assertTrue(isCoPrime(2, 1))
+        assertTrue(isCoPrime(1, 2))
+        assertTrue(isCoPrime(2, 3))
+        assertTrue(isCoPrime(1, 1))
+        assertTrue(isCoPrime(1, 234))
+        assertTrue(isCoPrime(222, 1))
     }
 
     @Test
@@ -154,6 +160,7 @@ class Tests {
         assertEquals(0.0, sin(Math.PI, 1e-5), 1e-5)
         assertEquals(-1.0, sin(3.0 * Math.PI / 2.0, 1e-5), 1e-5)
         assertEquals(0.0, sin(100 * Math.PI, 1e-5), 1e-5)
+        assertEquals(0.0, sin(-18.84955592153876, 0.7072697947852761), 1e-5)
     }
 
     @Test
@@ -164,6 +171,7 @@ class Tests {
         assertEquals(-1.0, cos(Math.PI, 1e-5), 1e-5)
         assertEquals(0.0, cos(3.0 * Math.PI / 2.0, 1e-5), 1e-5)
         assertEquals(1.0, cos(100 * Math.PI, 1e-5), 1e-5)
+        assertEquals(1.0, cos(-18.84955592153876, 1.0000022204460493e-10), 1e-5)
     }
 
     @Test
@@ -205,6 +213,11 @@ class Tests {
         assertEquals(6, squareSequenceDigit(12))
         assertEquals(0, squareSequenceDigit(17))
         assertEquals(9, squareSequenceDigit(27))
+        assertEquals(6, squareSequenceDigit(361129))
+        assertEquals(9, squareSequenceDigit(3))
+        assertEquals(1, squareSequenceDigit(4))
+        assertEquals(6, squareSequenceDigit(5))
+        assertEquals(2, squareSequenceDigit(6))
     }
 
     @Test
@@ -216,5 +229,6 @@ class Tests {
         assertEquals(2, fibSequenceDigit(9))
         assertEquals(5, fibSequenceDigit(14))
         assertEquals(2, fibSequenceDigit(20))
+        assertEquals(8, fibSequenceDigit(97))
     }
 }
