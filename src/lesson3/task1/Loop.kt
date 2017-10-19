@@ -163,8 +163,7 @@ fun sin(x: Double, eps: Double): Double {
     var n = -1
     var s = 0.0
     var b = true
-    while (g > 2 * Math.PI) g -= 2 * Math.PI
-    while (g < 0) g += 2 * Math.PI
+    g %= 2 * Math.PI
     do {
         n += 2
         val k = Math.pow(g, n.toDouble()) / factorial(n)
@@ -187,8 +186,7 @@ fun cos(x: Double, eps: Double): Double {
     var n = -2
     var s = 0.0
     var b = true
-    while (g > 2 * Math.PI) g -= 2 * Math.PI
-    while (g < 0) g += 2 * Math.PI
+    g %= 2 * Math.PI
     do {
         n += 2
         val k = Math.pow(g, n.toDouble()) / factorial(n)

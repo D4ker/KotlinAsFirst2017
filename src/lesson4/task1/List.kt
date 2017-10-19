@@ -292,21 +292,24 @@ fun decimalFromString(str: String, base: Int): Int {
  */
 fun roman(n: Int): String {
     val res = mutableListOf<String>()
-    val a = listOf<String>("I", "IV", "V", "IX", "X", "XL", "L", "XC", "C", "CD", "D", "CM", "M")
-    val b = listOf<Int>(1, 4, 5, 9, 10, 40, 50, 90, 100, 400, 500, 900, 1000)
-    var k = n
-    var p = 1
-    while (k > 0) {
-        val f = k % 10
-        if (f * p in b) res.add(0, a[b.indexOf(f * p)])
+    val romanNum = listOf<String>("I", "IV", "V", "IX", "X", "XL", "L", "XC", "C", "CD", "D", "CM", "M")
+    val num = listOf<Int>(1, 4, 5, 9, 10, 40, 50, 90, 100, 400, 500, 900, 1000)
+    var partNum = n
+    var counter = 1
+    while (partNum > 0) {
+        val f = if (counter < 1000) partNum % 10
+            else partNum
+        if (f * counter in num) res.add(0, romanNum[num.indexOf(f * counter)])
         else {
-            val g = if ((f in 6..8) && (p != 1000)) f - 5
+            val g = if ((f in 6..8) && (counter < 1000)) f - 5
                 else f
-            for (i in 1..g) res.add(0, a[b.indexOf(p)])
-            if ((f in 6..8) && (p != 1000)) res.add(0, a[b.indexOf(5 * p)])
+            if (counter > 1000) counter = 1000
+            for (i in 1..g) res.add(0, romanNum[num.indexOf(counter)])
+            if ((f in 6..8) && (counter < 1000)) res.add(0, romanNum[num.indexOf(5 * counter)])
         }
-        p *= 10
-        k /= 10
+        if (counter == 1000) break
+        counter *= 10
+        partNum /= 10
     }
     return res.joinToString("")
 }
@@ -327,33 +330,33 @@ fun russian(n: Int): String {
             "семьдесят", "восемьдесят", "девяносто")
     val fourthNum = listOf<String>("", "сто", "двести", "триста", "четыреста", "пятьсот", "шестьсот",
             "семьсот", "восемьсот", "девятьсот")
-    val a = mutableListOf<String>()
-    var k = n
-    var p = 0
-    while (k > 0) {
-        val g = k % 10
-        p++
-        when (p) {
+    val res = mutableListOf<String>()
+    var partNum = n
+    var counter = 0
+    while (partNum > 0) {
+        val g = partNum % 10
+        counter++
+        when (counter) {
 
-            1 -> if (k % 100 !in 10..19) a.add(0, firstNum[g])
-                    else a.add(0, secondNum[g])
+            1 -> if (partNum % 100 !in 10..19) res.add(0, firstNum[g])
+                    else res.add(0, secondNum[g])
 
-            2, 5 -> a.add(0, thirdNum[g])
+            2, 5 -> res.add(0, thirdNum[g])
 
-            3, 6 -> a.add(0, fourthNum[g])
+            3, 6 -> res.add(0, fourthNum[g])
 
-            4 -> if (k % 100 in 10..19)
-                    a.add(0, secondNum[g] + " тысяч")
+            4 -> if (partNum % 100 in 10..19)
+                    res.add(0, secondNum[g] + " тысяч")
                 else when (g) {
-                    0 -> a.add(0, "тысяч")
-                    1 -> a.add(0, "одна тысяча")
-                    2 -> a.add(0, "две тысячи")
-                    3, 4 -> a.add(0, firstNum[g] + " тысячи")
-                    in 5..9 -> a.add(0, firstNum[g] + " тысяч")
+                    0 -> res.add(0, "тысяч")
+                    1 -> res.add(0, "одна тысяча")
+                    2 -> res.add(0, "две тысячи")
+                    3, 4 -> res.add(0, firstNum[g] + " тысячи")
+                    in 5..9 -> res.add(0, firstNum[g] + " тысяч")
                 }
 
         }
-        k /= 10
+        partNum /= 10
     }
-    return a.filter { it != "" }.joinToString(separator = " ")
+    return res.filter { it != "" }.joinToString(separator = " ")
 }

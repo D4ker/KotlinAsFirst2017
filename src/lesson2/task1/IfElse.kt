@@ -34,10 +34,13 @@ fun minBiRoot(a: Double, b: Double, c: Double): Double {
  * Мой возраст. Для заданного 0 < n < 200, рассматриваемого как возраст человека,
  * вернуть строку вида: «21 год», «32 года», «12 лет».
  */
-fun ageDescription(age: Int): String = when {
-    (age % 10 in 5..9) || (age % 100 in 11..14) || (age % 10 == 0) -> "$age лет"
-    age % 10 in 2..4 -> "$age года"
-    else -> "$age год"
+fun ageDescription(age: Int): String {
+    val temp = age % 10
+    return when {
+        (temp in 5..9) || (age % 100 in 11..14) || (temp == 0) -> "$age лет"
+        temp in 2..4 -> "$age года"
+        else -> "$age год"
+    }
 }
 
 /**
@@ -72,11 +75,15 @@ fun timeForHalfWay(t1: Double, v1: Double,
  */
 fun whichRookThreatens(kingX: Int, kingY: Int,
                        rookX1: Int, rookY1: Int,
-                       rookX2: Int, rookY2: Int): Int = when {
-    ((kingX == rookX1) || (kingY == rookY1)) && ((kingX == rookX2) || (kingY == rookY2)) -> 3
-    (kingX == rookX1) || (kingY == rookY1) -> 1
-    (kingX == rookX2) || (kingY == rookY2) -> 2
-    else -> 0
+                       rookX2: Int, rookY2: Int): Int {
+    val p = (kingX == rookX1) || (kingY == rookY1)
+    val g = (kingX == rookX2) || (kingY == rookY2)
+    return when {
+        (p && g) -> 3
+        p -> 1
+        g -> 2
+        else -> 0
+    }
 }
 
 /**
@@ -91,11 +98,15 @@ fun whichRookThreatens(kingX: Int, kingY: Int,
  */
 fun rookOrBishopThreatens(kingX: Int, kingY: Int,
                           rookX: Int, rookY: Int,
-                          bishopX: Int, bishopY: Int): Int = when {
-    ((kingX == rookX) || (kingY == rookY)) && (Math.abs(bishopX - kingX) == Math.abs(bishopY - kingY)) -> 3
-    (kingX == rookX) || (kingY == rookY) -> 1
-    Math.abs(bishopX - kingX) == Math.abs(bishopY - kingY) -> 2
-    else -> 0
+                          bishopX: Int, bishopY: Int): Int {
+    val p = (kingX == rookX) || (kingY == rookY)
+    val g = Math.abs(bishopX - kingX) == Math.abs(bishopY - kingY)
+    return when {
+        (p && g) -> 3
+        p -> 1
+        g -> 2
+        else -> 0
+    }
 }
 
 /**
@@ -108,12 +119,12 @@ fun rookOrBishopThreatens(kingX: Int, kingY: Int,
  */
 fun triangleKind(a: Double, b: Double, c: Double): Int {
     if ((a + b <= c) || (Math.abs(a - b) >= c)) return -1
-    val max = Math.max(Math.max(a, b), c)
-    val min = Math.min(Math.min(a, b), c)
-    val sr = a + b + c - max - min
+    val max = kotlin.comparisons.maxOf(a, b, c)
+    val min = kotlin.comparisons.minOf(a, b, c)
+    val someResult = a + b + c - max - min
     return when {
-        sqr(min) + sqr(sr) < sqr(max) -> 2
-        sqr(min) + sqr(sr) == sqr(max) -> 1
+        sqr(min) + sqr(someResult) < sqr(max) -> 2
+        sqr(min) + sqr(someResult) == sqr(max) -> 1
         else -> 0
     }
 }
@@ -129,7 +140,7 @@ fun triangleKind(a: Double, b: Double, c: Double): Int {
 fun segmentLength(a: Int, b: Int, c: Int, d: Int): Int = when {
     (c in a..b) && (d in a..b) -> d - c
     (a in c..d) && (b in c..d) -> b - a
-    (c in a..b) && (d !in a..b) -> b - c //(a !in c..d) && (b in c..d) -> b - c
-    (c !in a..b) && (d in a..b) -> d - a //(a in c..d) && (b !in c..d) -> d - a
+    (c in a..b) && (d !in a..b) -> b - c
+    (c !in a..b) && (d in a..b) -> d - a
     else -> -1
 }

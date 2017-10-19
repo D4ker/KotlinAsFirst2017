@@ -265,24 +265,24 @@ fun mostExpensive(description: String): String {
  */
 fun fromRoman(roman: String): Int {
     if (roman == "") return -1
-    val a = listOf<String>("I", "IV", "V", "IX", "X", "XL", "L", "XC", "C", "CD", "D", "CM", "M")
-    val b = listOf<Int>(1, 4, 5, 9, 10, 40, 50, 90, 100, 400, 500, 900, 1000)
+    val romanNum = listOf<String>("I", "IV", "V", "IX", "X", "XL", "L", "XC", "C", "CD", "D", "CM", "M")
+    val num = listOf<Int>(1, 4, 5, 9, 10, 40, 50, 90, 100, 400, 500, 900, 1000)
     var str = roman
     var res = 0
     return try {
         while (str.length > 1) {
             val p = str.substring(0, 2)
-            if (p in a) {
-                res += b[a.indexOf(p)]
+            if (p in romanNum) {
+                res += num[romanNum.indexOf(p)]
                 if (str.length > 2) str = str.substring(2, str.length)
                 else break
             }
             else {
-                res += b[a.indexOf(str[0].toString())]
+                res += num[romanNum.indexOf(str[0].toString())]
                 str = str.substring(1, str.length)
             }
         }
-        if (str.length == 1) res += b[a.indexOf(str[0].toString())]
+        if (str.length == 1) res += num[romanNum.indexOf(str[0].toString())]
         res
     } catch (e: Exception) {
         -1
@@ -327,31 +327,31 @@ fun fromRoman(roman: String): Int {
  */
 fun computeDeviceCells(cells: Int, commands: String, limit: Int): List<Int> {
     val const = listOf<Char>('>', '<', '+', '-', '[', ']', ' ')
-    var p = 0
+    var counter = 0
     var numCom = -1
 
     for (i in commands) {
         if (i in const) when (i) { //проверка на парность
-                '[' -> p++
-                ']' -> p--
+                '[' -> counter++
+                ']' -> counter--
             }
         else throw IllegalArgumentException() //выбросить, если символ некорректен
-        if (p < 0) throw IllegalArgumentException() //выбросить, если парной скобки нет
+        if (counter < 0) throw IllegalArgumentException() //выбросить, если парной скобки нет
     }
-    if (p != 0) throw IllegalArgumentException() //выбросить, если парной скобки нет
+    if (counter != 0) throw IllegalArgumentException() //выбросить, если парной скобки нет
     //на этом проверка строки окончена, и есть смысл начать программу
 
-    p = 0
+    counter = 0
     var position = cells / 2
-    val a = mutableListOf<Int>()
+    val res = mutableListOf<Int>()
 
-    for (i in 0 until cells) a.add(0) //заполняем массив нулями
+    for (i in 0 until cells) res.add(0) //заполняем массив нулями
 
-    while ((numCom + 1 != commands.length) && (limit != p)) { //пока есть команды и лимит не исчерпан:
+    while ((numCom + 1 != commands.length) && (limit != counter)) { //пока есть команды и лимит не исчерпан:
         numCom++
-        p++
+        counter++
         var bracketNum = 0 //первая переменная для проверки скобок
-        var t = 0 //вторая переменная
+        var bracketNum2 = 0 //вторая переменная
         when (commands[numCom]) {
             '>' -> if (position + 1 >= cells) throw IllegalStateException()
                     else position++
@@ -359,17 +359,17 @@ fun computeDeviceCells(cells: Int, commands: String, limit: Int): List<Int> {
             '<' -> if (position - 1 < 0) throw IllegalStateException()
                     else position--
 
-            '+' -> a[position]++
+            '+' -> res[position]++
 
-            '-' -> a[position]--
+            '-' -> res[position]--
 
             '[' -> {
-                if (a[position] == 0)
+                if (res[position] == 0)
         //если 0, считаем скобки [, пока те не кончатся, а после находим скобку ] под номером последней скобки [
                     for (i in numCom until commands.length) {
                         if (commands[i] == '[') bracketNum++
-                        if (commands[i] == ']') t++
-                        if (bracketNum == t) {
+                        if (commands[i] == ']') bracketNum2++
+                        if (bracketNum == bracketNum2) {
                             numCom = i
                             break
                         }
@@ -377,11 +377,11 @@ fun computeDeviceCells(cells: Int, commands: String, limit: Int): List<Int> {
             }
 
             ']' -> {
-                if (a[position] != 0)
+                if (res[position] != 0)
                     for (i in numCom downTo 0) {
                         if (commands[i] == '[') bracketNum++
-                        if (commands[i] == ']') t++
-                        if (bracketNum == t) {
+                        if (commands[i] == ']') bracketNum2++
+                        if (bracketNum == bracketNum2) {
                             numCom = i
                             break
                         }
@@ -390,5 +390,5 @@ fun computeDeviceCells(cells: Int, commands: String, limit: Int): List<Int> {
 
         }
     }
-    return a
+    return res
 }
