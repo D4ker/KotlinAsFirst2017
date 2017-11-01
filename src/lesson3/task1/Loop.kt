@@ -118,11 +118,7 @@ fun minDivisor(n: Int): Int {
  *
  * Для заданного числа n > 1 найти максимальный делитель, меньший n
  */
-fun maxDivisor(n: Int): Int {
-    for (i in 2..Math.sqrt(n.toDouble()).toInt())
-        if (n % i == 0) return n / i
-    return 1
-}
+fun maxDivisor(n: Int): Int = n / minDivisor(n)
 
 /**
  * Простая
@@ -170,7 +166,7 @@ fun sin(x: Double, eps: Double): Double {
         if (b) s += k
         else s -= k
         b = !b
-    } while (k >= eps)
+    } while (Math.abs(k) >= eps)
     return s
 }
 
@@ -193,7 +189,7 @@ fun cos(x: Double, eps: Double): Double {
         if (b) s += k
         else s -= k
         b = !b
-    } while (k >= eps)
+    } while (Math.abs(k) >= eps)
     return s
 }
 
@@ -254,9 +250,11 @@ fun squareSequenceDigit(n: Int): Int {
     var k = 0
     var p = 2
     var s = 1
-    while (k + digitNumber(s) < n) {
-        k += digitNumber(s)
+    var g = digitNumber(s)
+    while (k + g < n) {
+        k += g
         s = p * p
+        g = digitNumber(s)
         p++
     }
     for (i in 0..digitNumber(s) + k - n) {
@@ -277,9 +275,11 @@ fun fibSequenceDigit(n: Int): Int {
     var k = 0
     var p = 2
     var s = 1
-    while (k + digitNumber(s) < n) {
-        k += digitNumber(s)
+    var g = digitNumber(s)
+    while (k + g < n) {
+        k += g
         s = fib(p)
+        g = digitNumber(s)
         p++
     }
     for (i in 0..digitNumber(s) + k - n) {

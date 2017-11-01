@@ -108,8 +108,7 @@ fun buildSumExample(list: List<Int>) = list.joinToString(separator = " + ", post
  */
 fun abs(v: List<Double>): Double {
     var k = 0.0
-    if (v.isNotEmpty())
-        for (element in v) k += element * element
+    for (element in v) k += element * element
     return Math.sqrt(k)
 }
 
@@ -130,9 +129,8 @@ fun mean(list: List<Double>): Double =
  * Обратите внимание, что данная функция должна изменять содержание списка list, а не его копии.
  */
 fun center(list: MutableList<Double>): MutableList<Double> {
-    val s = list.sum() / list.size
-    if (list.isNotEmpty())
-        for (i in 0 until list.size) list[i] -= s
+    val s = mean(list)
+    for (i in 0 until list.size) list[i] -= s
     return list
 }
 
@@ -145,8 +143,7 @@ fun center(list: MutableList<Double>): MutableList<Double> {
  */
 fun times(a: List<Double>, b: List<Double>): Double {
     var c = 0.0
-    if (a.isNotEmpty())
-        for (i in 0 until a.size) c += a[i] * b[i]
+    for (i in 0 until a.size) c += a[i] * b[i]
     return c
 }
 
@@ -239,12 +236,13 @@ fun convert(n: Int, base: Int): List<Int> {
  * строчными буквами: 10 -> a, 11 -> b, 12 -> c и так далее.
  * Например: n = 100, base = 4 -> 1210, n = 250, base = 14 -> 13c
  */
+val alphabet = "0123456789abcdefghijklmnopqrstuvwxyz"
+
 fun convertToString(n: Int, base: Int): String {
     val a = mutableListOf<String>()
     var k = n
-    val s = "0123456789abcdefghijklmnopqrstuvwxyz"
     while (k > 0) {
-        a.add(0, s[k % base].toString())
+        a.add(0, alphabet[k % base].toString())
         k /= base
     }
     if (n == 0) a.add("0")
@@ -258,11 +256,20 @@ fun convertToString(n: Int, base: Int): String {
  * из системы счисления с основанием base в десятичную.
  * Например: digits = (1, 3, 12), base = 14 -> 250
  */
+// Вспомогательная функция
+fun numToPow(num: Int, power: Int): Int {
+    var newNum = 1
+    for (i in 0 until power) {
+        newNum *= num
+    }
+    return newNum
+}
+
 fun decimal(digits: List<Int>, base: Int): Int {
-    var s = 0.0
+    var s = 0
     for (i in 0 until digits.size)
-        s += digits[i] * Math.pow(base.toDouble(), digits.size - 1.0 - i)
-    return s.toInt()
+        s += digits[i] * numToPow(base, digits.size - 1 - i)
+    return s
 }
 
 /**
@@ -275,11 +282,10 @@ fun decimal(digits: List<Int>, base: Int): Int {
  * Например: str = "13c", base = 14 -> 250
  */
 fun decimalFromString(str: String, base: Int): Int {
-    var g = 0.0
-    val s = "0123456789abcdefghijklmnopqrstuvwxyz"
+    val newDigits = mutableListOf<Int>()
     for (i in 0 until str.length)
-        g += s.indexOf(str[i], 0) * Math.pow(base.toDouble(), str.length - 1.0 - i)
-    return g.toInt()
+        newDigits.add(alphabet.indexOf(str[i], 0))
+    return decimal(newDigits, base)
 }
 
 /**
@@ -292,23 +298,33 @@ fun decimalFromString(str: String, base: Int): Int {
  */
 fun roman(n: Int): String {
     val res = mutableListOf<String>()
-    val romanNum = listOf<String>("I", "IV", "V", "IX", "X", "XL", "L", "XC", "C", "CD", "D", "CM", "M")
-    val num = listOf<Int>(1, 4, 5, 9, 10, 40, 50, 90, 100, 400, 500, 900, 1000)
+    val numToSymbol = mapOf(1 to "I", 4 to "IV", 5 to "V", 9 to "IX", 10 to "X", 40 to "XL",
+            50 to "L", 90 to "XC", 100 to "C", 400 to "CD", 500 to "D", 900 to "CM", 1000 to "M")
     var partNum = n
+    /* Счётчик, в который будем заносить степень десятки при переборе цифр числа.
+    Первой цифре соответствует 10^0, второй - 10^1, третьей - 10^2, а четвёртой и всем последующим - 10^3 */
     var counter = 1
+    // Перебираем все цифры числа (справа налево)
     while (partNum > 0) {
-        val f = if (counter < 1000) partNum % 10
-            else partNum
-        if (f * counter in num) res.add(0, romanNum[num.indexOf(f * counter)])
+        // Если нынешняя цифра не относится к тясячам, занести её в 'newDigit', иначе занести все оставшиеся цифры
+        val newDigit = if (counter < 1000) partNum % 10 else partNum
+        /* Если произведение цифры на степень десятки находится в имеющемся объекте 'numToSymbol',
+        занести в итоговый список соответствующий символ из данного объекта */
+        if (numToSymbol.containsKey(newDigit * counter)) res.add(0, numToSymbol.getValue(newDigit * counter))
         else {
-            val g = if ((f in 6..8) && (counter < 1000)) f - 5
-                else f
-            if (counter > 1000) counter = 1000
-            for (i in 1..g) res.add(0, romanNum[num.indexOf(counter)])
-            if ((f in 6..8) && (counter < 1000)) res.add(0, romanNum[num.indexOf(5 * counter)])
+            // Упрощаем цифру, отнимая от неё 5, если она в промежутке от 6 до 8 и степень десятки меньше 3
+            val simplifiedDigit = if ((newDigit in 6..8) && (counter < 1000)) newDigit - 5 else newDigit
+            // Добавляем в итоговый список 'simplifiedDigit' символов 'I', 'X', 'C', 'M'
+            for (i in 1..simplifiedDigit) res.add(0, numToSymbol.getValue(counter))
+            /* Если наша цифра поддавалась ранее упрощению и стпень десятки была меньше 3,
+            добавить в итоговую строку 'V', 'L', 'D' */
+            if ((newDigit in 6..8) && (counter < 1000)) res.add(0, numToSymbol.getValue(5 * counter))
         }
+        // Если счётчик равен 10^3, значит программа уже проверила тысячную цифру -> выходим из цикла
         if (counter == 1000) break
+        // В следующей интерации будем брать новую цифру -> увеличиваем степень десятки
         counter *= 10
+        // Выбрасываем проверенную только что цифру из числа
         partNum /= 10
     }
     return res.joinToString("")
@@ -322,37 +338,37 @@ fun roman(n: Int): String {
  * 23964 = "двадцать три тысячи девятьсот шестьдесят четыре"
  */
 fun russian(n: Int): String {
-    val firstNum = listOf<String>("", "один", "два", "три", "четыре", "пять", "шесть",
+    val firstNum = listOf("", "один", "два", "три", "четыре", "пять", "шесть",
             "семь", "восемь", "девять")
-    val secondNum = listOf<String>("десять", "одиннадцать", "двенадцать", "тринадцать","четырнадцать", "пятнадцать",
+    val secondNum = listOf("десять", "одиннадцать", "двенадцать", "тринадцать","четырнадцать", "пятнадцать",
             "шестнадцать", "семнадцать", "восемнадцать", "девятнадцать")
-    val thirdNum = listOf<String>("", "", "двадцать", "тридцать", "сорок", "пятьдесят", "шестьдесят",
+    val thirdNum = listOf("", "", "двадцать", "тридцать", "сорок", "пятьдесят", "шестьдесят",
             "семьдесят", "восемьдесят", "девяносто")
-    val fourthNum = listOf<String>("", "сто", "двести", "триста", "четыреста", "пятьсот", "шестьсот",
+    val fourthNum = listOf("", "сто", "двести", "триста", "четыреста", "пятьсот", "шестьсот",
             "семьсот", "восемьсот", "девятьсот")
     val res = mutableListOf<String>()
     var partNum = n
     var counter = 0
     while (partNum > 0) {
-        val g = partNum % 10
+        val newDigit = partNum % 10
         counter++
         when (counter) {
 
-            1 -> if (partNum % 100 !in 10..19) res.add(0, firstNum[g])
-                    else res.add(0, secondNum[g])
+            1 -> if (partNum % 100 !in 10..19) res.add(0, firstNum[newDigit])
+                    else res.add(0, secondNum[newDigit])
 
-            2, 5 -> res.add(0, thirdNum[g])
+            2, 5 -> res.add(0, thirdNum[newDigit])
 
-            3, 6 -> res.add(0, fourthNum[g])
+            3, 6 -> res.add(0, fourthNum[newDigit])
 
             4 -> if (partNum % 100 in 10..19)
-                    res.add(0, secondNum[g] + " тысяч")
-                else when (g) {
+                    res.add(0, secondNum[newDigit] + " тысяч")
+                else when (newDigit) {
                     0 -> res.add(0, "тысяч")
                     1 -> res.add(0, "одна тысяча")
                     2 -> res.add(0, "две тысячи")
-                    3, 4 -> res.add(0, firstNum[g] + " тысячи")
-                    in 5..9 -> res.add(0, firstNum[g] + " тысяч")
+                    3, 4 -> res.add(0, firstNum[newDigit] + " тысячи")
+                    in 5..9 -> res.add(0, firstNum[newDigit] + " тысяч")
                 }
 
         }

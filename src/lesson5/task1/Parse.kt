@@ -66,9 +66,10 @@ fun main(args: Array<String>) {
  * День и месяц всегда представлять двумя цифрами, например: 03.04.2011.
  * При неверном формате входной строки вернуть пустую строку
  */
+val month = listOf("января", "февраля", "марта", "апреля", "мая",
+        "июня", "июля", "августа", "сентября", "октября", "ноября", "декабря")
+
 fun dateStrToDigit(str: String): String {
-    val month = listOf<String>("января", "февраля", "марта", "апреля", "мая",
-            "июня", "июля", "августа", "сентября", "октября", "ноября", "декабря")
     val s = str.split(" ")
     return try {
         val a = s[0].toInt()
@@ -90,8 +91,6 @@ fun dateStrToDigit(str: String): String {
  * При неверном формате входной строки вернуть пустую строку
  */
 fun dateDigitToStr(digital: String): String {
-    val month = listOf<String>("января", "февраля", "марта", "апреля", "мая",
-            "июня", "июля", "августа", "сентября", "октября", "ноября", "декабря")
     val s = digital.split(".")
     return try {
         val a = s[0].toInt()
@@ -120,9 +119,9 @@ fun dateDigitToStr(digital: String): String {
 fun flattenPhoneNumber(phone: String): String {
     val list = mutableListOf<Char>()
     var b = false
-    for (ch in phone) {
-        if ((ch == ' ') || (ch == '-')) continue
+    loop@ for (ch in phone) {
         when (ch) {
+            ' ', '-' -> continue@loop
             in '0'..'9' -> list.add(ch)
             '+', '(' -> if (ch !in list) list.add(ch) else return ""
             ')' -> if (!b) return ""
@@ -150,7 +149,7 @@ fun bestLongJump(jumps: String): Int {
     var mx = -1
     try {
         for (i in a) mx = Math.max(mx, i.toInt())
-    } catch (e: Exception) {
+    } catch (e: NumberFormatException) {
         return -1
     }
     return mx
@@ -173,7 +172,7 @@ fun bestHighJump(jumps: String): Int {
         for (i in 1 until a.size step 2)
             for (j in 0 until a[i].length)
                 if (a[i][j] == '+') mx = Math.max(mx, a[i - 1].toInt())
-    } catch (e: Exception) {
+    } catch (e: NumberFormatException) {
         return -1
     }
     return mx
@@ -199,7 +198,7 @@ fun plusMinus(expression: String): Int {
                 else -> throw IllegalArgumentException()
             }
         return s
-    } catch (e: Exception) {
+    } catch (e: NumberFormatException) {
         throw IllegalArgumentException()
     }
 }
@@ -247,7 +246,7 @@ fun mostExpensive(description: String): String {
                 tp = a[mx].split(" ")[1].toDouble()
             }
         a[mx].split(" ")[0]
-    } catch (e: Exception) {
+    } catch (e: IndexOutOfBoundsException) {
         ""
     }
 }
@@ -265,26 +264,26 @@ fun mostExpensive(description: String): String {
  */
 fun fromRoman(roman: String): Int {
     if (roman == "") return -1
-    val romanNum = listOf<String>("I", "IV", "V", "IX", "X", "XL", "L", "XC", "C", "CD", "D", "CM", "M")
-    val num = listOf<Int>(1, 4, 5, 9, 10, 40, 50, 90, 100, 400, 500, 900, 1000)
+    val numToSymbol = mapOf("I" to 1, "IV" to 4, "V" to 5, "IX" to 9, "X" to 10, "XL" to 40,
+            "L" to 50, "XC" to 90, "C" to 100, "CD" to 400, "D" to 500, "CM" to 900, "M" to 1000)
     var str = roman
     var res = 0
     return try {
         while (str.length > 1) {
             val p = str.substring(0, 2)
-            if (p in romanNum) {
-                res += num[romanNum.indexOf(p)]
+            if (numToSymbol.containsKey(p)) {
+                res += numToSymbol.getValue(p)
                 if (str.length > 2) str = str.substring(2, str.length)
                 else break
             }
             else {
-                res += num[romanNum.indexOf(str[0].toString())]
+                res += numToSymbol.getValue(str[0].toString())
                 str = str.substring(1, str.length)
             }
         }
-        if (str.length == 1) res += num[romanNum.indexOf(str[0].toString())]
+        if (str.length == 1) res += numToSymbol.getValue(str[0].toString())
         res
-    } catch (e: Exception) {
+    } catch (e: NoSuchElementException) {
         -1
     }
 }
@@ -331,10 +330,12 @@ fun computeDeviceCells(cells: Int, commands: String, limit: Int): List<Int> {
     var numCom = -1
 
     for (i in commands) {
-        if (i in const) when (i) { //проверка на парность
+        if (i in const) {
+            when (i) { //проверка на парность
                 '[' -> counter++
                 ']' -> counter--
             }
+        }
         else throw IllegalArgumentException() //выбросить, если символ некорректен
         if (counter < 0) throw IllegalArgumentException() //выбросить, если парной скобки нет
     }
@@ -350,8 +351,16 @@ fun computeDeviceCells(cells: Int, commands: String, limit: Int): List<Int> {
     while ((numCom + 1 != commands.length) && (limit != counter)) { //пока есть команды и лимит не исчерпан:
         numCom++
         counter++
-        var bracketNum = 0 //первая переменная для проверки скобок
-        var bracketNum2 = 0 //вторая переменная
+        var openingBracket = 0
+        var closingBracket = 0
+
+        // Вспомогательная функция
+        fun searchForBrackets(num: Int) {
+            if (commands[num] == '[') openingBracket++
+            if (commands[num] == ']') closingBracket++
+            if (openingBracket == closingBracket) numCom = num
+        }
+
         when (commands[numCom]) {
             '>' -> if (position + 1 >= cells) throw IllegalStateException()
                     else position++
@@ -367,24 +376,16 @@ fun computeDeviceCells(cells: Int, commands: String, limit: Int): List<Int> {
                 if (res[position] == 0)
         //если 0, считаем скобки [, пока те не кончатся, а после находим скобку ] под номером последней скобки [
                     for (i in numCom until commands.length) {
-                        if (commands[i] == '[') bracketNum++
-                        if (commands[i] == ']') bracketNum2++
-                        if (bracketNum == bracketNum2) {
-                            numCom = i
-                            break
-                        }
+                        searchForBrackets(i)
+                        if (openingBracket == closingBracket) break
                     }
             }
 
             ']' -> {
                 if (res[position] != 0)
                     for (i in numCom downTo 0) {
-                        if (commands[i] == '[') bracketNum++
-                        if (commands[i] == ']') bracketNum2++
-                        if (bracketNum == bracketNum2) {
-                            numCom = i
-                            break
-                        }
+                        searchForBrackets(i)
+                        if (openingBracket == closingBracket) break
                     }
             }
 

@@ -121,10 +121,10 @@ fun triangleKind(a: Double, b: Double, c: Double): Int {
     if ((a + b <= c) || (Math.abs(a - b) >= c)) return -1
     val max = kotlin.comparisons.maxOf(a, b, c)
     val min = kotlin.comparisons.minOf(a, b, c)
-    val someResult = a + b + c - max - min
+    val middle = a + b + c - max - min
     return when {
-        sqr(min) + sqr(someResult) < sqr(max) -> 2
-        sqr(min) + sqr(someResult) == sqr(max) -> 1
+        sqr(min) + sqr(middle) < sqr(max) -> 2
+        sqr(min) + sqr(middle) == sqr(max) -> 1
         else -> 0
     }
 }
