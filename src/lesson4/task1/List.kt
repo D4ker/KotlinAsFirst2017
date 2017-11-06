@@ -157,9 +157,8 @@ fun times(a: List<Double>, b: List<Double>): Double {
  */
 fun polynom(p: List<Double>, x: Double): Double {
     var k = 0.0
-    if (p.isNotEmpty())
-        for (i in 0 until p.size)
-            k += p[i] * Math.pow(x, i.toDouble())
+    for (i in 0 until p.size)
+        k += p[i] * Math.pow(x, i.toDouble())
     return k
 }
 
@@ -174,8 +173,7 @@ fun polynom(p: List<Double>, x: Double): Double {
  * Обратите внимание, что данная функция должна изменять содержание списка list, а не его копии.
  */
 fun accumulate(list: MutableList<Double>): MutableList<Double> {
-    if (list.isNotEmpty())
-        for (i in 1 until list.size) list[i] += list[i - 1]
+    for (i in 1 until list.size) list[i] += list[i - 1]
     return list
 }
 
@@ -257,7 +255,7 @@ fun convertToString(n: Int, base: Int): String {
  * Например: digits = (1, 3, 12), base = 14 -> 250
  */
 // Вспомогательная функция
-fun numToPow(num: Int, power: Int): Int {
+fun pow(num: Int, power: Int): Int {
     var newNum = 1
     for (i in 0 until power) {
         newNum *= num
@@ -268,7 +266,7 @@ fun numToPow(num: Int, power: Int): Int {
 fun decimal(digits: List<Int>, base: Int): Int {
     var s = 0
     for (i in 0 until digits.size)
-        s += digits[i] * numToPow(base, digits.size - 1 - i)
+        s += digits[i] * pow(base, digits.size - 1 - i)
     return s
 }
 
@@ -283,8 +281,8 @@ fun decimal(digits: List<Int>, base: Int): Int {
  */
 fun decimalFromString(str: String, base: Int): Int {
     val newDigits = mutableListOf<Int>()
-    for (i in 0 until str.length)
-        newDigits.add(alphabet.indexOf(str[i], 0))
+    for (element in str)
+        newDigits.add(alphabet.indexOf(element, 0))
     return decimal(newDigits, base)
 }
 
@@ -297,7 +295,7 @@ fun decimalFromString(str: String, base: Int): Int {
  * Например: 23 = XXIII, 44 = XLIV, 100 = C
  */
 fun roman(n: Int): String {
-    val res = mutableListOf<String>()
+    val res = mutableListOf<String?>()
     val numToSymbol = mapOf(1 to "I", 4 to "IV", 5 to "V", 9 to "IX", 10 to "X", 40 to "XL",
             50 to "L", 90 to "XC", 100 to "C", 400 to "CD", 500 to "D", 900 to "CM", 1000 to "M")
     var partNum = n
@@ -310,15 +308,15 @@ fun roman(n: Int): String {
         val newDigit = if (counter < 1000) partNum % 10 else partNum
         /* Если произведение цифры на степень десятки находится в имеющемся объекте 'numToSymbol',
         занести в итоговый список соответствующий символ из данного объекта */
-        if (numToSymbol.containsKey(newDigit * counter)) res.add(0, numToSymbol.getValue(newDigit * counter))
+        if (numToSymbol.containsKey(newDigit * counter)) res.add(0, numToSymbol[newDigit * counter])
         else {
             // Упрощаем цифру, отнимая от неё 5, если она в промежутке от 6 до 8 и степень десятки меньше 3
             val simplifiedDigit = if ((newDigit in 6..8) && (counter < 1000)) newDigit - 5 else newDigit
             // Добавляем в итоговый список 'simplifiedDigit' символов 'I', 'X', 'C', 'M'
-            for (i in 1..simplifiedDigit) res.add(0, numToSymbol.getValue(counter))
+            for (i in 1..simplifiedDigit) res.add(0, numToSymbol[counter])
             /* Если наша цифра поддавалась ранее упрощению и стпень десятки была меньше 3,
             добавить в итоговую строку 'V', 'L', 'D' */
-            if ((newDigit in 6..8) && (counter < 1000)) res.add(0, numToSymbol.getValue(5 * counter))
+            if ((newDigit in 6..8) && (counter < 1000)) res.add(0, numToSymbol[5 * counter])
         }
         // Если счётчик равен 10^3, значит программа уже проверила тысячную цифру -> выходим из цикла
         if (counter == 1000) break

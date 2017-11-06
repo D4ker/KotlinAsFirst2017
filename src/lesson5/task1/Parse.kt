@@ -131,6 +131,7 @@ fun flattenPhoneNumber(phone: String): String {
     }
     if ('(' in list)
         if (!b) list.remove('(') else return ""
+    if ('+' in list && list.size == 1) return ""
     return list.joinToString(separator = "")
 }
 
@@ -238,6 +239,7 @@ fun firstDuplicateIndex(str: String): Int {
 fun mostExpensive(description: String): String {
     val a = description.split("; ")
     var mx = 0
+    if (description.isEmpty()) return ""
     return try {
         var tp = a[mx].split(" ")[1].toDouble()
         for (i in 0 until a.size)
@@ -246,7 +248,7 @@ fun mostExpensive(description: String): String {
                 tp = a[mx].split(" ")[1].toDouble()
             }
         a[mx].split(" ")[0]
-    } catch (e: IndexOutOfBoundsException) {
+    } catch (e: NumberFormatException) {
         ""
     }
 }
@@ -268,7 +270,15 @@ fun fromRoman(roman: String): Int {
             "L" to 50, "XC" to 90, "C" to 100, "CD" to 400, "D" to 500, "CM" to 900, "M" to 1000)
     var str = roman
     var res = 0
-    return try {
+
+    // Вспомогательная функция
+    fun checkSymbol(symb: Char) {
+        val temp = symb.toString()
+        if (numToSymbol.containsKey(temp)) {
+            res += numToSymbol.getValue(temp)
+        } else res = -1
+    }
+
         while (str.length > 1) {
             val p = str.substring(0, 2)
             if (numToSymbol.containsKey(p)) {
@@ -277,15 +287,15 @@ fun fromRoman(roman: String): Int {
                 else break
             }
             else {
-                res += numToSymbol.getValue(str[0].toString())
+                checkSymbol(str[0])
+                if (res == -1) return -1
                 str = str.substring(1, str.length)
             }
         }
-        if (str.length == 1) res += numToSymbol.getValue(str[0].toString())
-        res
-    } catch (e: NoSuchElementException) {
-        -1
-    }
+        if (str.length == 1) {
+            checkSymbol(str[0])
+        }
+        return res
 }
 
 /**
