@@ -68,4 +68,40 @@ class Graph {
                         .min()
                 if (min == null) null else min + 1
             }
+
+    // Поиск координат вершин, соединяющих расстояние между двумя заданными вершинами на самом коротком пути между ними
+    fun trajectoryOfMove(start: String, finish: String) = trajectoryOfMove(this[start], this[finish])
+
+    private fun trajectoryOfMove(start: Vertex, finish: Vertex): List<String> {
+        val queue = ArrayDeque<Vertex>()
+        queue.add(start)
+        val visited = mutableMapOf(start to 0)
+        while (queue.isNotEmpty()) {
+            val next = queue.poll()
+            val distance = visited[next]!!
+
+            // Будем идти по графам задом наперёд, с конца к началу
+            if (next == finish) {
+                val visitedList = visited.toList()
+                val trajectory = mutableListOf<String>(next.name)
+                var temp = next
+                for (i in visitedList.size - 1 downTo 0) {
+                    if (visitedList[i].second == visited[temp]!! - 1) {
+                        if (visitedList[i].first in temp.neighbors) {
+                            trajectory.add(0, (visitedList[i].first.name))
+                            temp = visitedList[i].first
+                        }
+                    }
+                }
+                return trajectory
+
+            }
+            for (neighbor in next.neighbors) {
+                if (neighbor in visited) continue
+                visited.put(neighbor, distance + 1)
+                queue.add(neighbor)
+            }
+        }
+        return listOf()
+    }
 }
