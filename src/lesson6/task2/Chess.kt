@@ -39,11 +39,8 @@ val alphabet = " abcdefgh"
  * Если нотация некорректна, бросить IllegalArgumentException
  */
 fun square(notation: String): Square {
-    try {
-        return Square(alphabet.indexOf(notation[0]), notation[1].toString().toInt())
-    } catch (e: NumberFormatException) {
-        throw IllegalArgumentException()
-    }
+    if (notation.length != 2 || notation[0] !in 'a'..'h' || notation[1] !in '1'..'8') throw IllegalArgumentException()
+    return Square(alphabet.indexOf(notation[0]), notation[1].toString().toInt())
 }
 
 /**
@@ -70,16 +67,13 @@ fun square(notation: String): Square {
  * Ладья может пройти через клетку (3, 3) или через клетку (6, 1) к клетке (6, 3).
  */
 fun rookMoveNumber(start: Square, end: Square): Int {
-    try {
-        val compareColumn = start.column == end.column
-        val compareRow = start.row == end.row
-        return when {
-            (compareColumn && compareRow) -> 0
-            (!compareColumn && !compareRow) -> 2
-            else -> 1
-        }
-    } catch (e: NumberFormatException) {
-        throw IllegalArgumentException()
+    if (!start.inside() || !end.inside()) throw IllegalArgumentException()
+    val compareColumn = start.column == end.column
+    val compareRow = start.row == end.row
+    return when {
+        (compareColumn && compareRow) -> 0
+        (!compareColumn && !compareRow) -> 2
+        else -> 1
     }
 }
 
@@ -128,18 +122,15 @@ fun rookTrajectory(start: Square, end: Square): List<Square> =
  * Слон может пройти через клетку (6, 4) к клетке (3, 7).
  */
 fun bishopMoveNumber(start: Square, end: Square): Int {
-    try {
-        val comparePosition = Math.abs(start.column - end.column) == Math.abs(start.row - end.row)
-        val evenStart = (start.column + start.row) % 2 == 0
-        val evenEnd = (end.column + end.row) % 2 == 0
-        return when {
-            (start == end) -> 0
-            ((evenStart && !evenEnd) || (!evenStart && evenEnd)) -> -1
-            (comparePosition) -> 1
-            else -> 2
-        }
-    } catch (e: NumberFormatException) {
-        throw IllegalArgumentException()
+    if (!start.inside() || !end.inside()) throw IllegalArgumentException()
+    val comparePosition = Math.abs(start.column - end.column) == Math.abs(start.row - end.row)
+    val evenStart = (start.column + start.row) % 2 == 0
+    val evenEnd = (end.column + end.row) % 2 == 0
+    return when {
+        (start == end) -> 0
+        ((evenStart && !evenEnd) || (!evenStart && evenEnd)) -> -1
+        (comparePosition) -> 1
+        else -> 2
     }
 }
 
@@ -207,13 +198,10 @@ fun bishopTrajectory(start: Square, end: Square): List<Square> {
  * Король может последовательно пройти через клетки (4, 2) и (5, 2) к клетке (6, 3).
  */
 fun kingMoveNumber(start: Square, end: Square): Int {
-    try {
-        val distanceX = Math.abs(end.column - start.column)
-        val distanceY = Math.abs(end.row - start.row)
-        return if (distanceX > distanceY) distanceX else distanceY
-    } catch (e: NumberFormatException) {
-        throw IllegalArgumentException()
-    }
+    if (!start.inside() || !end.inside()) throw IllegalArgumentException()
+    val distanceX = Math.abs(end.column - start.column)
+    val distanceY = Math.abs(end.row - start.row)
+    return if (distanceX > distanceY) distanceX else distanceY
 }
 
 /**
@@ -308,11 +296,8 @@ fun useGraph(): Graph {
 }
 
 fun knightMoveNumber(start: Square, end: Square): Int {
-    try {
-        return useGraph().bfs("${start.column}${start.row}", "${end.column}${end.row}")
-    } catch (e: NumberFormatException) {
-        throw IllegalArgumentException()
-    }
+    if (!start.inside() || !end.inside()) throw IllegalArgumentException()
+    return useGraph().bfs("${start.column}${start.row}", "${end.column}${end.row}")
 }
 
 /**

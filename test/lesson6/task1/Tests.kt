@@ -212,5 +212,6 @@ class Tests {
         for (p in listOf(p1, p2, p3, p4, p5, p6)) {
             assertTrue(result.contains(p))
         }
+        assertEquals(4.0, result.radius, 0.02)
     }
 }
