@@ -279,23 +279,23 @@ fun fromRoman(roman: String): Int {
         } else res = -1
     }
 
-        while (str.length > 1) {
-            val p = str.substring(0, 2)
-            if (numToSymbol.containsKey(p)) {
-                res += numToSymbol.getValue(p)
-                if (str.length > 2) str = str.substring(2, str.length)
-                else break
-            }
-            else {
-                checkSymbol(str[0])
-                if (res == -1) return -1
-                str = str.substring(1, str.length)
-            }
+    while (str.length > 1) {
+        val p = str.substring(0, 2)
+        if (numToSymbol.containsKey(p)) {
+            res += numToSymbol.getValue(p)
+            if (str.length > 2) str = str.substring(2, str.length)
+            else break
         }
-        if (str.length == 1) {
+        else {
             checkSymbol(str[0])
+            if (res == -1) return -1
+            str = str.substring(1, str.length)
         }
-        return res
+    }
+    if (str.length == 1) {
+        checkSymbol(str[0])
+    }
+    return res
 }
 
 /**
@@ -335,7 +335,7 @@ fun fromRoman(roman: String): Int {
  *
  */
 fun computeDeviceCells(cells: Int, commands: String, limit: Int): List<Int> {
-    val const = listOf<Char>('>', '<', '+', '-', '[', ']', ' ')
+    val const = listOf('>', '<', '+', '-', '[', ']', ' ')
     var counter = 0
     var numCom = -1
 
