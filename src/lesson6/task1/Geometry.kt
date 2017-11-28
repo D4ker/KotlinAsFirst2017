@@ -263,7 +263,8 @@ fun minContainingCircle(vararg points: Point): Circle {
     if (points.size == 1) return Circle(points[0], 0.0)
     if (points.size == 2) return circleByDiameter(Segment(points[0], points[1]))
     val twoPoints = diameter(*points)
-    val center = Point((twoPoints.begin.x + twoPoints.end.x) / 2, (twoPoints.begin.y + twoPoints.end.y) / 2)
+    val firstCircle = circleByDiameter(twoPoints)
+    val center = firstCircle.center
 
     var searchPoint = points[0]
     var maxDistance = center.distance(searchPoint)
@@ -274,5 +275,5 @@ fun minContainingCircle(vararg points: Point): Circle {
         }
     }
 
-    return circleByThreePoints(twoPoints.begin, twoPoints.end, searchPoint)
+    return if (center.distance(searchPoint) <= firstCircle.radius) firstCircle else circleByThreePoints(twoPoints.begin, twoPoints.end, searchPoint)
 }
