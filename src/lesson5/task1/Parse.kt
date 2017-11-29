@@ -72,13 +72,14 @@ val month = listOf("января", "февраля", "марта", "апреля
 fun dateStrToDigit(str: String): String {
     val s = str.split(" ")
     return try {
-        val a = s[0].toInt()
-        val b = month.indexOf(s[1]) + 1 //Если элемента нет в списке, b = -1+1 = 0
-        val c = s[2].toInt()
-        if ((s.size == 3) && (a in 1..31) && (b != 0) && (c >= 0))
-            String.format("%02d.%02d.%d", a, b, c)
-        else ""
-    } catch (e: Exception) {
+        if (s.size == 3) {
+            val a = s[0].toInt()
+            val b = month.indexOf(s[1]) + 1 //Если элемента нет в списке, b = -1+1 = 0
+            val c = s[2].toInt()
+            if (a in 1..31 && b != 0 && c >= 0) return String.format("%02d.%02d.%d", a, b, c)
+        }
+        ""
+    } catch (e: NumberFormatException) {
         ""
     }
 }
@@ -93,13 +94,15 @@ fun dateStrToDigit(str: String): String {
 fun dateDigitToStr(digital: String): String {
     val s = digital.split(".")
     return try {
-        val a = s[0].toInt()
-        val b = month[s[1].toInt() - 1]
-        val c = s[2].toInt()
-        if ((s.size == 3) && (a in 1..31) && (c >= 0))
-            String.format("%d %s %d", a, b, c)
-        else ""
-    } catch (e: Exception) {
+        if (s.size == 3) {
+            val a = s[0].toInt()
+            val temp = s[1].toInt()
+            val b = if (temp in 1..12) month[temp - 1] else return ""
+            val c = s[2].toInt()
+            if (a in 1..31 && c >= 0) return String.format("%d %s %d", a, b, c)
+        }
+        ""
+    } catch (e: NumberFormatException) {
         ""
     }
 }
@@ -129,8 +132,9 @@ fun flattenPhoneNumber(phone: String): String {
         }
         if ((ch == '(') || (ch == ')')) b = !b
     }
-    if ('(' in list)
+    if ('(' in list) {
         if (!b) list.remove('(') else return ""
+    }
     if ('+' in list && list.size == 1) return ""
     return list.joinToString(separator = "")
 }
@@ -170,9 +174,11 @@ fun bestHighJump(jumps: String): Int {
     val a = jumps.split(" ")
     var mx = -1
     try {
-        for (i in 1 until a.size step 2)
-            for (j in 0 until a[i].length)
+        for (i in 1 until a.size step 2) {
+            for (j in 0 until a[i].length) {
                 if (a[i][j] == '+') mx = Math.max(mx, a[i - 1].toInt())
+            }
+        }
     } catch (e: NumberFormatException) {
         return -1
     }
@@ -217,10 +223,9 @@ fun firstDuplicateIndex(str: String): Int {
     val a = str.split(" ")
     var p = 0
     if (a.size == 1) return -1
-    if (a[0].toLowerCase() == a[1].toLowerCase()) return 0
-    for (i in 1..a.size - 2) {
-        p += a[i - 1].length + 1
+    for (i in 0..a.size - 2) {
         if (a[i].toLowerCase() == a[i + 1].toLowerCase()) return p
+        p += a[i].length + 1
     }
     return -1
 }
@@ -241,12 +246,14 @@ fun mostExpensive(description: String): String {
     var mx = 0
     if (description.isEmpty()) return ""
     return try {
-        var tp = a[mx].split(" ")[1].toDouble()
-        for (i in 0 until a.size)
-            if (a[i].split(" ")[1].toDouble() > tp) {
+        var tp = -1.0
+        for (i in 0 until a.size) {
+            val new = a[i].split(" ")[1].toDouble()
+            if (new > tp) {
                 mx = i
-                tp = a[mx].split(" ")[1].toDouble()
+                tp = new
             }
+        }
         a[mx].split(" ")[0]
     } catch (e: NumberFormatException) {
         ""
@@ -272,9 +279,9 @@ fun fromRoman(roman: String): Int {
     var res = 0
 
     // Вспомогательная функция
-    fun checkSymbol(symb: Char) {
+    fun parseSymbol(symb: Char) {
         val temp = symb.toString()
-        if (numToSymbol.containsKey(temp)) {
+        if (temp in numToSymbol) {
             res += numToSymbol.getValue(temp)
         } else res = -1
     }
@@ -287,13 +294,13 @@ fun fromRoman(roman: String): Int {
             else break
         }
         else {
-            checkSymbol(str[0])
+            parseSymbol(str[0])
             if (res == -1) return -1
             str = str.substring(1, str.length)
         }
     }
     if (str.length == 1) {
-        checkSymbol(str[0])
+        parseSymbol(str[0])
     }
     return res
 }

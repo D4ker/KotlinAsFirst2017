@@ -170,7 +170,11 @@ fun bishopTrajectory(start: Square, end: Square): List<Square> {
             listOf(start, Square(start.column + deltaX, start.row + deltaY), end)
         }
         else -> {
-            deltaY += if (deltaY > 0) 1 else -1
+            deltaY += if (end.row - start.row > 0) {
+                if ((start.column + start.row) % 2 == 0) 1 else 2
+            } else {
+                if ((start.column + start.row) % 2 == 0) -1 else -2
+            }
             deltaX = if (start.column + deltaY in 1..8) deltaY else -deltaY
             listOf(start, Square(start.column + deltaX, start.row + deltaY), end)
         }

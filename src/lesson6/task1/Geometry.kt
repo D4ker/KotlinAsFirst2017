@@ -2,6 +2,7 @@
 package lesson6.task1
 
 import lesson1.task1.sqr
+import java.util.*
 
 /**
  * Точка на плоскости
@@ -166,9 +167,9 @@ class Line private constructor(val b: Double, val angle: Double) {
 }
 
 // Вспомогательная функция
-fun periodOfAngle(angle: Double): Double {
+fun normalizeAngle(angle: Double): Double {
     var newAngle = angle % (2 * Math.PI)
-    if (newAngle < 0) newAngle += Math.PI
+    if (newAngle < 0) newAngle += 2 * Math.PI
     if (newAngle >= Math.PI) newAngle -= Math.PI
     return newAngle
 }
@@ -179,7 +180,7 @@ fun periodOfAngle(angle: Double): Double {
  * Построить прямую по отрезку
  */
 fun lineBySegment(s: Segment): Line =
-        Line(s.begin, periodOfAngle(Math.atan((s.end.y - s.begin.y) / (s.end.x - s.begin.x))))
+        Line(s.begin, normalizeAngle(Math.atan2(s.end.y - s.begin.y, s.end.x - s.begin.x)))
 
 /**
  * Средняя
@@ -197,7 +198,7 @@ fun bisectorByPoints(a: Point, b: Point): Line {
     val segment = Segment(a, b)
     val center = Point((segment.begin.x + segment.end.x) / 2, (segment.begin.y + segment.end.y) / 2)
     val angle = lineBySegment(segment).angle + Math.PI / 2
-    return Line(center, periodOfAngle(angle))
+    return Line(center, normalizeAngle(angle))
 }
 
 /**
@@ -209,11 +210,7 @@ fun bisectorByPoints(a: Point, b: Point): Line {
 fun findNearestCirclePair(vararg circles: Circle): Pair<Circle, Circle> {
 
     // Вспомогательная функция
-    // Под вопросом
-    fun distance(circles: Pair<Circle, Circle>): Double {
-        val dis = circles.first.center.distance(circles.second.center) - circles.first.radius - circles.second.radius
-        return if (dis < 0) 0.0 else dis
-    }
+    fun distance(circles: Pair<Circle, Circle>): Double = circles.first.distance(circles.second)
 
     if (circles.size < 2) throw IllegalArgumentException()
     var searchPair = Pair(circles[0], circles[1])
