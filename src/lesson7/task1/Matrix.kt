@@ -38,32 +38,57 @@ interface Matrix<E> {
  * height = высота, width = ширина, e = чем заполнить элементы.
  * Бросить исключение IllegalArgumentException, если height или width <= 0.
  */
-fun <E> createMatrix(height: Int, width: Int, e: E): Matrix<E> = TODO()
+fun <E> createMatrix(height: Int, width: Int, e: E): Matrix<E> =
+        if (height > 0 && width > 0) MatrixImpl<E>(height, width, e) else throw IllegalArgumentException()
 
 /**
  * Средняя сложность
  *
  * Реализация интерфейса "матрица"
  */
-class MatrixImpl<E> : Matrix<E> {
-    override val height: Int = TODO()
+class MatrixImpl<E>(override val height: Int, override val width: Int, e: E) : Matrix<E> {
+    private val elementsOfMatrix = mutableListOf<MutableList<E>>()
 
-    override val width: Int = TODO()
+    init {
+        for (i in 0 until height) {
+            elementsOfMatrix.add(mutableListOf())
+            for (j in 0 until width) {
+                elementsOfMatrix[i].add(e)
+            }
+        }
+    }
 
-    override fun get(row: Int, column: Int): E  = TODO()
+    override fun get(row: Int, column: Int): E  = elementsOfMatrix[row][column]
 
-    override fun get(cell: Cell): E  = TODO()
+    override fun get(cell: Cell): E  = get(cell.row, cell.column)
 
     override fun set(row: Int, column: Int, value: E) {
-        TODO()
+        elementsOfMatrix[row][column] = value
     }
 
-    override fun set(cell: Cell, value: E) {
-        TODO()
+    override fun set(cell: Cell, value: E) = set(cell.row, cell.column, value)
+
+    override fun equals(other: Any?) = other is MatrixImpl<*> && height == other.height && width == other.width
+
+    override fun toString(): String {
+        val str = StringBuilder()
+        str.append("[[")
+        str.append(elementsOfMatrix[0].joinToString(", "))
+        str.append("]")
+        for (i in 1 until height) {
+            str.append(", [")
+            str.append(elementsOfMatrix[i].joinToString(", "))
+            str.append("]")
+        }
+        str.append("]")
+        return str.toString()
     }
 
-    override fun equals(other: Any?) = TODO()
-
-    override fun toString(): String = TODO()
+    override fun hashCode(): Int {
+        var result = height
+        result = 31 * result + width
+        result = 31 * result + elementsOfMatrix.hashCode()
+        return result
+    }
 }
 
