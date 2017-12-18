@@ -96,8 +96,8 @@ fun dateDigitToStr(digital: String): String {
     return try {
         if (s.size == 3) {
             val a = s[0].toInt()
-            val temp = s[1].toInt()
-            val b = if (temp in 1..12) month[temp - 1] else return ""
+            val monthNum = s[1].toInt()
+            val b = if (monthNum in 1..12) month[monthNum - 1] else return ""
             val c = s[2].toInt()
             if (a in 1..31 && c >= 0) return String.format("%d %s %d", a, b, c)
         }
@@ -126,15 +126,18 @@ fun flattenPhoneNumber(phone: String): String {
         when (ch) {
             ' ', '-' -> continue@loop
             in '0'..'9' -> list.add(ch)
-            '+', '(' -> if (ch !in list) list.add(ch) else return ""
-            ')' -> if (!b) return ""
+            '+', '(' -> {
+                if (ch !in list) list.add(ch) else return ""
+                if (ch == '(') b = !b
+            }
+            ')' -> {
+                if (!b) return ""
+                b = !b
+            }
             else -> return ""
         }
-        if ((ch == '(') || (ch == ')')) b = !b
     }
-    if ('(' in list) {
-        if (!b) list.remove('(') else return ""
-    }
+    if (!b) list.remove('(') else return ""
     if ('+' in list && list.size == 1) return ""
     return list.joinToString(separator = "")
 }
@@ -175,9 +178,7 @@ fun bestHighJump(jumps: String): Int {
     var mx = -1
     try {
         for (i in 1 until a.size step 2) {
-            for (j in 0 until a[i].length) {
-                if (a[i][j] == '+') mx = Math.max(mx, a[i - 1].toInt())
-            }
+            if ('+' in a[i]) mx = Math.max(mx, a[i - 1].toInt())
         }
     } catch (e: NumberFormatException) {
         return -1
@@ -241,19 +242,19 @@ fun firstDuplicateIndex(str: String): Int {
  * Все цены должны быть положительными
  */
 fun mostExpensive(description: String): String {
-    val a = description.split("; ")
+    val a = description.split("; ").map { it.split(" ") }
     var mx = 0
     if (description.isEmpty()) return ""
     return try {
         var tp = -1.0
         for (i in 0 until a.size) {
-            val new = a[i].split(" ")[1].toDouble()
+            val new = a[i][1].toDouble()
             if (new > tp) {
                 mx = i
                 tp = new
             }
         }
-        a[mx].split(" ")[0]
+        a[mx][0]
     } catch (e: NumberFormatException) {
         ""
     }
@@ -274,32 +275,22 @@ fun fromRoman(roman: String): Int {
     if (roman == "") return -1
     val numToSymbol = mapOf("I" to 1, "IV" to 4, "V" to 5, "IX" to 9, "X" to 10, "XL" to 40,
             "L" to 50, "XC" to 90, "C" to 100, "CD" to 400, "D" to 500, "CM" to 900, "M" to 1000)
-    var str = roman
+    var index = 0
     var res = 0
-
-    // Вспомогательная функция
-    fun parseSymbol(symb: Char) {
-        val temp = symb.toString()
-        if (temp in numToSymbol) {
-            res += numToSymbol.getValue(temp)
-        } else res = -1
-    }
-
-    while (str.length > 1) {
-        val p = str.substring(0, 2)
+    var count = roman.length - index
+    while (count > 0) {
+        val p = if (count != 1) roman.substring(index, index + 2) else ""
         if (numToSymbol.containsKey(p)) {
             res += numToSymbol.getValue(p)
-            if (str.length > 2) str = str.substring(2, str.length)
+            if (count > 2) index += 2
             else break
+            count -= 2
         }
         else {
-            parseSymbol(str[0])
-            if (res == -1) return -1
-            str = str.substring(1, str.length)
+            res += numToSymbol[roman[index].toString()] ?: return -1
+            index++
+            count--
         }
-    }
-    if (str.length == 1) {
-        parseSymbol(str[0])
     }
     return res
 }
@@ -369,14 +360,6 @@ fun computeDeviceCells(cells: Int, commands: String, limit: Int): List<Int> {
         counter++
         var openingBracket = 0
         var closingBracket = 0
-
-        // Вспомогательная функция
-        fun searchForBrackets(num: Int) {
-            if (commands[num] == '[') openingBracket++
-            if (commands[num] == ']') closingBracket++
-            if (openingBracket == closingBracket) numCom = num
-        }
-
         when (commands[numCom]) {
             '>' -> if (position + 1 >= cells) throw IllegalStateException()
                     else position++
@@ -392,16 +375,24 @@ fun computeDeviceCells(cells: Int, commands: String, limit: Int): List<Int> {
                 if (res[position] == 0)
         //если 0, считаем скобки [, пока те не кончатся, а после находим скобку ] под номером последней скобки [
                     for (i in numCom until commands.length) {
-                        searchForBrackets(i)
-                        if (openingBracket == closingBracket) break
+                        if (commands[i] == '[') openingBracket++
+                        if (commands[i] == ']') closingBracket++
+                        if (openingBracket == closingBracket) {
+                            numCom = i
+                            break
+                        }
                     }
             }
 
             ']' -> {
                 if (res[position] != 0)
                     for (i in numCom downTo 0) {
-                        searchForBrackets(i)
-                        if (openingBracket == closingBracket) break
+                        if (commands[i] == '[') openingBracket++
+                        if (commands[i] == ']') closingBracket++
+                        if (openingBracket == closingBracket) {
+                            numCom = i
+                            break
+                        }
                     }
             }
 

@@ -1,4 +1,5 @@
 @file:Suppress("UNUSED_PARAMETER")
+
 package lesson7.task2
 
 import lesson7.task1.Matrix
@@ -60,24 +61,29 @@ operator fun Matrix<Int>.plus(other: Matrix<Int>): Matrix<Int> {
  *  9  8  7  6
  */
 fun generateSpiral(height: Int, width: Int): Matrix<Int> {
-    val matrix = createMatrix(height, width, 1)
+    val stop = width * height
+    val matrix = createMatrix(height, width, stop)
     var indent = 0
     var counter = 1
     var newWidth = width
     var newHeight = height
-    for (k in 0 until Math.round(Math.min(height, width) / 2.0)) {
+    while (counter < stop) {
         newHeight--
         newWidth--
+        if (counter >= stop) break
         for (j in indent until newWidth) {
             matrix[indent, j] = counter++
         }
+        if (counter >= stop) break
         for (i in indent until newHeight) {
             matrix[i, newWidth] = counter++
         }
+        if (counter >= stop) break
         for (j in newWidth downTo indent + 1) {
             matrix[newHeight, j] = counter++
         }
-        for (i in newHeight downTo  indent + 1) {
+        if (counter >= stop) break
+        for (i in newHeight downTo indent + 1) {
             matrix[i, indent] = counter++
         }
         indent++
@@ -177,11 +183,11 @@ fun generateSnake(height: Int, width: Int): Matrix<Int> {
 fun <E> rotate(matrix: Matrix<E>): Matrix<E> {
     val matrixSize = matrix.width
     if (matrix.height != matrixSize) throw IllegalArgumentException()
-    val newMatrix = createMatrix(matrixSize, matrixSize, matrix[0,0])
+    val newMatrix = createMatrix(matrixSize, matrixSize, matrix[0, 0])
     for (i in 0 until matrixSize) {
-        val temp = matrixSize - i - 1
-        for (j in 0 until  matrixSize) {
-            newMatrix[j, temp] = matrix[i, j]
+        val column = matrixSize - i - 1
+        for (j in 0 until matrixSize) {
+            newMatrix[j, column] = matrix[i, j]
         }
     }
     return newMatrix
@@ -207,10 +213,10 @@ fun isLatinSquare(matrix: Matrix<Int>): Boolean {
         val listX = mutableListOf<Int>()
         val listY = mutableListOf<Int>()
         for (j in 0 until matrixSize) {
-            val  xNum = matrix[i, j]
+            val xNum = matrix[i, j]
             if (xNum !in 1..matrixSize || xNum in listX) return false
             listX.add(xNum)
-            val  yNum = matrix[j, i]
+            val yNum = matrix[j, i]
             if (yNum !in 1..matrixSize || yNum in listY) return false
             listY.add(yNum)
         }
@@ -250,7 +256,7 @@ fun sumNeighbours(matrix: Matrix<Int>): Matrix<Int> {
             newMatrix[i, j] = sum
         }
     }
-    return  newMatrix
+    return newMatrix
 }
 
 /**
@@ -344,17 +350,15 @@ fun sumSubMatrix(matrix: Matrix<Int>): Matrix<Int> {
 fun canOpenLock(key: Matrix<Int>, lock: Matrix<Int>): Triple<Boolean, Int, Int> {
     for (i in 0..lock.height - key.height) {
         loop@ for (j in 0..lock.width - key.width) {
-            if (key[0, 0] != lock[i, j]) {
-                for (y in 0 until key.height) {
-                    for (x in 0 until key.width) {
-                        if (key[y, x] == lock[i + y, j + x]) continue@loop
-                    }
+            for (y in 0 until key.height) {
+                for (x in 0 until key.width) {
+                    if (key[y, x] == lock[i + y, j + x]) continue@loop
                 }
-                return (Triple(true, i, j))
             }
+            return (Triple(true, i, j))
         }
     }
-    return Triple(false, 0 ,0)
+    return Triple(false, 0, 0)
 }
 
 /**
